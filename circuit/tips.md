@@ -3,3 +3,7 @@
 3.osc
 4.boot
 5.usb
+6.uart
+7.led
+8.swd
+9.dap

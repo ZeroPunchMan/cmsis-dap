@@ -1,0 +1,57 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "preLaunchTask": "build",
+            "name": "ARM Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/firmware.elf",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "MIMode": "gdb",
+            "windows": {
+                "miDebuggerPath": "arm-none-eabi-gdb.exe"
+            },
+            "linux": {
+                "miDebuggerPath": "arm-none-eabi-gdb",
+                "externalConsole": false
+            },
+            "targetArchitecture": "arm",
+            "setupCommands": [
+                {
+                    "description": "set working directory",
+                    "text": "cd ${workspaceFolder}/build",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "open elf file",
+                    "text": "file firmware.elf",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "connect gdb server",
+                    "text": "target remote | openocd -f interface/stlink-v2.cfg -f target/stm32f1x.cfg -c \"gdb_port pipe; log_output openocd.log\"",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "reset halt",
+                    "text": "monitor reset halt",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "just load",
+                    "text": "load",
+                    "ignoreFailures": true
+                }
+            ]
+            //"miDebuggerServerAddress": "localhost:3333",
+            //"debugServerPath": "${workspaceFolder}/debug_server.bat",
+            //"debugServerArgs": "",
+            //"serverStarted": "watchpoints",
+            //"serverLaunchTimeout": 3000
+        }
+    ]
+}

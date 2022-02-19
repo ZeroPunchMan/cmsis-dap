@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name dap_link-rescue)(type Legacy)(uri ${KIPRJMOD}/dap_link-rescue.lib)(options "")(descr ""))
+)

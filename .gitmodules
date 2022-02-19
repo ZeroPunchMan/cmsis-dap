@@ -1,0 +1,3 @@
+[submodule "firmware/common/clib"]
+	path = firmware/common/clib
+	url = https://gitee.com/zeropunchman/clib.git
