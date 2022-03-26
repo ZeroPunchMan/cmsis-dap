@@ -5,7 +5,6 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/common/clib/inc",
-                "${workspaceFolder}/common/mcu-misc/inc",
                 "${workspaceFolder}/common/",
                 "${workspaceFolder}/Drivers/STM32F1xx_HAL_Driver/Inc",
                 "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F1xx/Include",

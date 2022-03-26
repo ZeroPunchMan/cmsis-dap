@@ -27,7 +27,15 @@
         "stm32f1xx_ll_gpio.h": "c",
         "usart.h": "c",
         "cl_list.h": "c",
-        "dap_config.h": "c"
+        "dap_config.h": "c",
+        "stm32f1xx_hal.h": "c",
+        "dap_agent.h": "c",
+        "cl_log.h": "c",
+        "clib_config.h": "c",
+        "stdbool.h": "c",
+        "_stdint.h": "c",
+        "_default_types.h": "c",
+        "_intsup.h": "c"
     },
     "workbench.editor.enablePreview": false
 }
