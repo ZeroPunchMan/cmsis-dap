@@ -49,6 +49,7 @@ void MX_USB_PCD_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USB_Init 2 */
+  HAL_PCD_Start(&hpcd_USB_FS);
 
   /* USER CODE END USB_Init 2 */
 }
@@ -76,7 +77,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *pcdHandle)
     HAL_NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
     /* USER CODE BEGIN USB_MspInit 1 */
-
+    
     /* USER CODE END USB_MspInit 1 */
   }
 }

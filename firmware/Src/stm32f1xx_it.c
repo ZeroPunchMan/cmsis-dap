@@ -210,7 +210,7 @@ void USB_HP_CAN1_TX_IRQHandler(void)
   /* USER CODE END USB_HP_CAN1_TX_IRQn 0 */
   HAL_PCD_IRQHandler(&hpcd_USB_FS);
   /* USER CODE BEGIN USB_HP_CAN1_TX_IRQn 1 */
-  CL_LOG_LINE("usb hp");
+  // CL_LOG_LINE("usb hp");
   /* USER CODE END USB_HP_CAN1_TX_IRQn 1 */
 }
 
@@ -224,7 +224,7 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
   /* USER CODE END USB_LP_CAN1_RX0_IRQn 0 */
   HAL_PCD_IRQHandler(&hpcd_USB_FS);
   /* USER CODE BEGIN USB_LP_CAN1_RX0_IRQn 1 */
-  CL_LOG_LINE("usb lp");
+  // CL_LOG_LINE("usb lp");
   /* USER CODE END USB_LP_CAN1_RX0_IRQn 1 */
 }
 
