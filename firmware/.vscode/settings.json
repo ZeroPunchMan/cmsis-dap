@@ -4,6 +4,7 @@
         "**/*.lst": true,
         "**/*.d": true,
         "**/*.o": true,
+        "build": true,
         ".mxproject": true,
         "common/clib/testcase" : true,
         "common/clib/Makefile" : true,
