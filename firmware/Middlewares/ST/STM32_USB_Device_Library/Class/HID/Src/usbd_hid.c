@@ -47,6 +47,7 @@ EndBSPDependencies */
 #include "usbd_hid.h"
 #include "usbd_ctlreq.h"
 #include "cl_log.h"
+#include "systime.h"
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
  * @{
  */
@@ -96,6 +97,7 @@ static uint8_t *USBD_HID_GetFSCfgDesc(uint16_t *length);
 static uint8_t *USBD_HID_GetDeviceQualifierDesc(uint16_t *length);
 
 static uint8_t USBD_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
+static uint8_t USBD_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum);
 /**
  * @}
  */
@@ -108,11 +110,11 @@ USBD_ClassTypeDef USBD_HID = {
     .Init = USBD_HID_Init,
     .DeInit = USBD_HID_DeInit,
     .Setup = USBD_HID_Setup,
-    .EP0_TxSent = NULL,        /*EP0_TxSent*/
-    .EP0_RxReady = NULL,       /*EP0_RxReady*/
-    .DataIn = USBD_HID_DataIn, /*DataIn*/
-    .DataOut = NULL,           /*DataOut*/
-    .SOF = NULL,               /*SOF */
+    .EP0_TxSent = NULL,          /*EP0_TxSent*/
+    .EP0_RxReady = NULL,         /*EP0_RxReady*/
+    .DataIn = USBD_HID_DataIn,   /*DataIn*/
+    .DataOut = USBD_HID_DataOut, /*DataOut*/
+    .SOF = NULL,                 /*SOF */
     .IsoINIncomplete = NULL,
     .IsoOUTIncomplete = NULL,
     .GetHSConfigDescriptor = NULL,
@@ -450,11 +452,11 @@ static uint8_t USBD_HID_Setup(USBD_HandleTypeDef *pdev,
     switch (req->bmRequest & USB_REQ_TYPE_MASK)
     {
     case USB_REQ_TYPE_VENDOR:
-        if(req->bRequest == 0x90)
+        if (req->bRequest == 0x90)
         {
             pbuf = USBD_Custom_0x90;
             len = req->wLength;
-            if(len > sizeof(USBD_Custom_0x90))
+            if (len > sizeof(USBD_Custom_0x90))
                 len = sizeof(USBD_Custom_0x90);
 
             USBD_CtlSendData(pdev, USBD_Custom_0x90, len);
@@ -536,7 +538,7 @@ static uint8_t USBD_HID_Setup(USBD_HandleTypeDef *pdev,
             if (pdev->dev_state == USBD_STATE_CONFIGURED)
             {
                 hhid->AltSetting = (uint8_t)(req->wValue);
-                CL_LOG_LINE("set interface: %d, %d", req->wIndex, req->wValue);
+                CL_LOG_LINE("set itf: %d, %d", req->wIndex, req->wValue);
                 USBD_CtlSendStatus(pdev);
             }
             else
@@ -615,9 +617,35 @@ static uint8_t *USBD_HID_GetFSCfgDesc(uint16_t *length)
 static uint8_t USBD_HID_DataIn(USBD_HandleTypeDef *pdev,
                                uint8_t epnum)
 {
+    uint8_t testData[] = {
+        0x20,
+        0x00,
+        0x00, // count
+        0x0e,
+        0x10, // bit-4:A
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x5c, 0x03, 0x73, 0xf4, 0xf9, 0xfe, 0x9d, 0x01};
+
+    testData[2]++;
+    uint32_t sec = GetSysTime() / 1000;
+    if (sec & 0x01)
+        testData[4] = 0x10;
+    else
+        testData[4] = 0x00;
 
     /* Ensure that the FIFO is empty before a new transfer, this condition could
     be caused by  a new transfer before the end of the previous transfer */
+    ((USBD_HID_HandleTypeDef *)pdev->pClassData)->state = HID_IDLE;
+    CL_LOG_LINE("data in: %x", epnum);
+    if (epnum == CON_INTR_EP_IN)
+    {
+        USBD_LL_Transmit(pdev, CON_INTR_EP_IN, testData, sizeof(testData));
+    }
+    return USBD_OK;
+}
+
+static uint8_t USBD_HID_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum)
+{
+    CL_LOG_LINE("data out");
     ((USBD_HID_HandleTypeDef *)pdev->pClassData)->state = HID_IDLE;
     return USBD_OK;
 }
