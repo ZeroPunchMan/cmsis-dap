@@ -68,7 +68,7 @@
 #define USBD_MANUFACTURER_STRING "Microsoft"
 #define USBD_PID_FS 0x02ea
 #define USBD_PRODUCT_STRING_FS "Controller"
-#define USBD_SERIAL_NUMBER "3032363030313035383432383234"
+#define USBD_SERIAL_NUMBER "3032363030313035383432383235"
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -99,9 +99,6 @@
  * @brief Private functions declaration.
  * @{
  */
-
-static void Get_SerialNum(void);
-static void IntToUnicode(uint32_t value, uint8_t *pbuf, uint8_t len);
 
 /**
  * @}
@@ -280,36 +277,6 @@ uint8_t *USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   return USBD_StrDesc;
 }
 
-/**
- * @brief  Convert Hex 32Bits value into char
- * @param  value: value to convert
- * @param  pbuf: pointer to the buffer
- * @param  len: buffer length
- * @retval None
- */
-static void IntToUnicode(uint32_t value, uint8_t *pbuf, uint8_t len)
-{
-  uint8_t idx = 0;
-
-  for (idx = 0; idx < len; idx++)
-  {
-    if (((value >> 28)) < 0xA)
-    {
-      pbuf[2 * idx] = (value >> 28) + '0';
-    }
-    else
-    {
-      pbuf[2 * idx] = (value >> 28) + 'A' - 10;
-    }
-
-    value = value << 4;
-
-    pbuf[2 * idx + 1] = 0;
-  }
-}
-/**
- * @}
- */
 
 /**
  * @}
