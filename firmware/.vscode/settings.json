@@ -36,7 +36,9 @@
         "stdbool.h": "c",
         "_stdint.h": "c",
         "_default_types.h": "c",
-        "_intsup.h": "c"
+        "_intsup.h": "c",
+        "limits": "c",
+        "cstddef": "c"
     },
     "workbench.editor.enablePreview": false
 }

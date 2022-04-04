@@ -239,7 +239,7 @@ USBD_StatusTypeDef  USBD_StdEPReq(USBD_HandleTypeDef *pdev,
   {
     case USB_REQ_TYPE_CLASS:
     case USB_REQ_TYPE_VENDOR:
-      pdev->pClass->Setup(pdev, req);
+      ret = (USBD_StatusTypeDef)pdev->pClass->Setup(pdev, req);
       break;
 
     case USB_REQ_TYPE_STANDARD:
@@ -405,7 +405,7 @@ USBD_StatusTypeDef  USBD_StdEPReq(USBD_HandleTypeDef *pdev,
 static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev,
                                USBD_SetupReqTypedef *req)
 {
-  uint16_t len = 0U;
+  uint16_t len = req->wLength;
   uint8_t *pbuf = NULL;
   uint8_t err = 0U;
 

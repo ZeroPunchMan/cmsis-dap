@@ -19,6 +19,7 @@
                 "HSE_VALUE=8000000",
                 "STM32F103xB",
                 "PREFETCH_ENABLE=1",
+                "__GNUC__",
 
                 "___int64_t_defined",
                 "___int8_t_defined",
