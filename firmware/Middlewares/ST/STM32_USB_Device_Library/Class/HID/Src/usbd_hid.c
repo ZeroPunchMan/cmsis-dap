@@ -386,8 +386,11 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE] __
 static uint8_t USBD_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
     /* Open EP IN */
-    USBD_LL_OpenEP(pdev, HID_EPIN_ADDR, USBD_EP_TYPE_INTR, HID_EPIN_SIZE);
-    pdev->ep_in[HID_EPIN_ADDR & 0xFU].is_used = 1U;
+    USBD_LL_OpenEP(pdev, CON_INTR_EP_OUT, USBD_EP_TYPE_INTR, 0x40);
+    pdev->ep_in[CON_INTR_EP_OUT & 0xFU].is_used = 1U;
+
+    USBD_LL_OpenEP(pdev, CON_INTR_EP_IN, USBD_EP_TYPE_INTR, 0x40);
+    pdev->ep_in[CON_INTR_EP_IN & 0xFU].is_used = 1U;
 
     pdev->pClassData = USBD_malloc(sizeof(USBD_HID_HandleTypeDef));
 
@@ -412,8 +415,11 @@ static uint8_t USBD_HID_DeInit(USBD_HandleTypeDef *pdev,
                                uint8_t cfgidx)
 {
     /* Close HID EPs */
-    USBD_LL_CloseEP(pdev, HID_EPIN_ADDR);
-    pdev->ep_in[HID_EPIN_ADDR & 0xFU].is_used = 0U;
+    USBD_LL_CloseEP(pdev, CON_INTR_EP_OUT);
+    pdev->ep_in[CON_INTR_EP_OUT & 0xFU].is_used = 0U;
+
+    USBD_LL_CloseEP(pdev, CON_INTR_EP_IN);
+    pdev->ep_in[CON_INTR_EP_IN & 0xFU].is_used = 0U;
 
     /* FRee allocated memory */
     if (pdev->pClassData != NULL)
@@ -554,33 +560,6 @@ static uint8_t USBD_HID_Setup(USBD_HandleTypeDef *pdev,
     }
 
     return ret;
-}
-
-/**
- * @brief  USBD_HID_SendReport
- *         Send HID Report
- * @param  pdev: device instance
- * @param  buff: pointer to report
- * @retval status
- */
-uint8_t USBD_HID_SendReport(USBD_HandleTypeDef *pdev,
-                            uint8_t *report,
-                            uint16_t len)
-{
-    USBD_HID_HandleTypeDef *hhid = (USBD_HID_HandleTypeDef *)pdev->pClassData;
-
-    if (pdev->dev_state == USBD_STATE_CONFIGURED)
-    {
-        if (hhid->state == HID_IDLE)
-        {
-            hhid->state = HID_BUSY;
-            USBD_LL_Transmit(pdev,
-                             HID_EPIN_ADDR,
-                             report,
-                             len);
-        }
-    }
-    return USBD_OK;
 }
 
 /**

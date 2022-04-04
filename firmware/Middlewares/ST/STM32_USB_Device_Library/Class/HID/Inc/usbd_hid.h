@@ -41,8 +41,8 @@ extern "C" {
 /** @defgroup USBD_HID_Exported_Defines
   * @{
   */
-#define HID_EPIN_ADDR                 0x81U
-#define HID_EPIN_SIZE                 0x04U
+#define CON_INTR_EP_OUT (0x02)
+#define CON_INTR_EP_IN (0x82)
 
 #define USB_HID_CONFIG_DESC_SIZ       0x60
 #define USB_HID_DESC_SIZ              9U
@@ -118,9 +118,6 @@ extern USBD_ClassTypeDef  USBD_HID;
 /** @defgroup USB_CORE_Exported_Functions
   * @{
   */
-uint8_t USBD_HID_SendReport(USBD_HandleTypeDef *pdev,
-                            uint8_t *report,
-                            uint16_t len);
 
 uint32_t USBD_HID_GetPollingInterval(USBD_HandleTypeDef *pdev);
 
