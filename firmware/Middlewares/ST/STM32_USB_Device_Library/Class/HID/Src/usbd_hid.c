@@ -448,7 +448,6 @@ static uint8_t USBD_HID_Setup(USBD_HandleTypeDef *pdev,
     uint8_t *pbuf = NULL;
     uint16_t status_info = 0U;
     USBD_StatusTypeDef ret = USBD_OK;
-
     switch (req->bmRequest & USB_REQ_TYPE_MASK)
     {
     case USB_REQ_TYPE_VENDOR:
@@ -538,7 +537,7 @@ static uint8_t USBD_HID_Setup(USBD_HandleTypeDef *pdev,
             if (pdev->dev_state == USBD_STATE_CONFIGURED)
             {
                 hhid->AltSetting = (uint8_t)(req->wValue);
-                CL_LOG_LINE("set itf: %d, %d", req->wIndex, req->wValue);
+                // CL_LOG_LINE("set itf: %d, %d", req->wIndex, req->wValue);
                 USBD_CtlSendStatus(pdev);
             }
             else
@@ -635,17 +634,17 @@ static uint8_t USBD_HID_DataIn(USBD_HandleTypeDef *pdev,
     /* Ensure that the FIFO is empty before a new transfer, this condition could
     be caused by  a new transfer before the end of the previous transfer */
     ((USBD_HID_HandleTypeDef *)pdev->pClassData)->state = HID_IDLE;
-    CL_LOG_LINE("data in: %x", epnum);
-    if (epnum == CON_INTR_EP_IN)
-    {
-        USBD_LL_Transmit(pdev, CON_INTR_EP_IN, testData, sizeof(testData));
-    }
+    // CL_LOG_LINE("data in");
+    // if (epnum == CON_INTR_EP_IN)
+    // {
+    //     USBD_LL_Transmit(pdev, CON_INTR_EP_IN, testData, sizeof(testData));
+    // }
     return USBD_OK;
 }
 
 static uint8_t USBD_HID_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
-    CL_LOG_LINE("data out");
+    // CL_LOG_LINE("data out");
     ((USBD_HID_HandleTypeDef *)pdev->pClassData)->state = HID_IDLE;
     return USBD_OK;
 }

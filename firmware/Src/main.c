@@ -98,7 +98,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   // DapAgent_Init();
-  CL_LOG_LINE("init done");
+  // CL_LOG_LINE("init done");
   while (1)
   {
     /* USER CODE END WHILE */

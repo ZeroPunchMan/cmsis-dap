@@ -28,6 +28,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "cl_log.h"
+#include "usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -121,7 +122,7 @@ void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_SetupStage((USBD_HandleTypeDef*)hpcd->pData, (uint8_t *)hpcd->Setup);
-  //CL_LOG_LINE("setup st");
+  CL_LOG_LINE("st %d", hpcd->USB_Address);
 }
 
 /**
@@ -137,7 +138,7 @@ void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DataOutStage((USBD_HandleTypeDef*)hpcd->pData, epnum, hpcd->OUT_ep[epnum].xfer_buff);
-  //CL_LOG_LINE("datout st");
+  // CL_LOG_LINE("datout st");
 }
 
 /**
@@ -153,7 +154,10 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DataInStage((USBD_HandleTypeDef*)hpcd->pData, epnum, hpcd->IN_ep[epnum].xfer_buff);
-  //CL_LOG_LINE("datin st");
+  // static uint8_t s[4] = {'d', '0', '\r', '\n'};
+  // s[1] = epnum +0x30;
+  // UsartSendData(USART1, s, 4);
+  // CL_LOG_LINE("di %d", epnum);
 }
 
 /**
