@@ -20,7 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_ctlreq.h"
 #include "usbd_ioreq.h"
-
+#include "cl_log.h"
 
 /** @addtogroup STM32_USBD_STATE_DEVICE_LIBRARY
   * @{
@@ -608,6 +608,7 @@ static void USBD_SetAddress(USBD_HandleTypeDef *pdev,
     else
     {
       pdev->dev_address = dev_addr;
+      CL_LOG_LINE("add: %x", pdev->dev_address);
       USBD_LL_SetUSBAddress(pdev, dev_addr);
       USBD_CtlSendStatus(pdev);
 

@@ -55,7 +55,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
-#include "cl_log.h"
 
 /** @addtogroup STM32F1xx_HAL_Driver
   * @{
@@ -1615,7 +1614,6 @@ HAL_StatusTypeDef HAL_PCD_SetAddress(PCD_HandleTypeDef *hpcd, uint8_t address)
 {
   __HAL_LOCK(hpcd);
   hpcd->USB_Address = address;
-  CL_LOG_LINE("add %d", address);
   (void)USB_SetDevAddress(hpcd->Instance, address);
   __HAL_UNLOCK(hpcd);
 

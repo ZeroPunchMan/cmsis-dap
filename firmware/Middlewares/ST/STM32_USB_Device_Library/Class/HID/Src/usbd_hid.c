@@ -389,13 +389,15 @@ static uint8_t USBD_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
     /* Open EP IN */
     USBD_LL_OpenEP(pdev, CON_INTR_EP_OUT, USBD_EP_TYPE_INTR, 0x40);
-    pdev->ep_in[CON_INTR_EP_OUT & 0xFU].is_used = 1U;
+    pdev->ep_out[CON_INTR_EP_OUT & 0xFU].is_used = 1U;
+    pdev->ep_out[2].maxpacket = 0x40;
 
     USBD_LL_OpenEP(pdev, CON_INTR_EP_IN, USBD_EP_TYPE_INTR, 0x40);
     pdev->ep_in[CON_INTR_EP_IN & 0xFU].is_used = 1U;
+    pdev->ep_in[2].maxpacket = 0x40;
 
     pdev->pClassData = USBD_malloc(sizeof(USBD_HID_HandleTypeDef));
-
+    CL_LOG_LINE("open");
     if (pdev->pClassData == NULL)
     {
         return USBD_FAIL;
@@ -422,6 +424,7 @@ static uint8_t USBD_HID_DeInit(USBD_HandleTypeDef *pdev,
 
     USBD_LL_CloseEP(pdev, CON_INTR_EP_IN);
     pdev->ep_in[CON_INTR_EP_IN & 0xFU].is_used = 0U;
+    CL_LOG_LINE("close");
 
     /* FRee allocated memory */
     if (pdev->pClassData != NULL)

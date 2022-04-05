@@ -122,7 +122,6 @@ void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_SetupStage((USBD_HandleTypeDef*)hpcd->pData, (uint8_t *)hpcd->Setup);
-  CL_LOG_LINE("st %d", hpcd->USB_Address);
 }
 
 /**
@@ -157,7 +156,7 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
   // static uint8_t s[4] = {'d', '0', '\r', '\n'};
   // s[1] = epnum +0x30;
   // UsartSendData(USART1, s, 4);
-  // CL_LOG_LINE("di %d", epnum);
+  CL_LOG_LINE("di %d", epnum);
 }
 
 /**
@@ -197,7 +196,7 @@ void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
 
   /* Reset Device. */
   USBD_LL_Reset((USBD_HandleTypeDef*)hpcd->pData);
-  //CL_LOG_LINE("reset");
+  CL_LOG_LINE("re");
 }
 
 /**
@@ -323,7 +322,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   pdev->pData = &hpcd_USB_FS;
 
   hpcd_USB_FS.Instance = USB;
-  hpcd_USB_FS.Init.dev_endpoints = 8;
+  hpcd_USB_FS.Init.dev_endpoints = 6;
   hpcd_USB_FS.Init.speed = PCD_SPEED_FULL;
   hpcd_USB_FS.Init.low_power_enable = DISABLE;
   hpcd_USB_FS.Init.lpm_enable = DISABLE;
@@ -353,7 +352,8 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x80 , PCD_SNG_BUF, 0x58);
   /* USER CODE END EndPoint_Configuration */
   /* USER CODE BEGIN EndPoint_Configuration_HID */
-  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x81 , PCD_SNG_BUF, 0x100);
+  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , CON_INTR_EP_OUT , PCD_SNG_BUF, 0x100);
+  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , CON_INTR_EP_IN , PCD_SNG_BUF, 0x140);
   /* USER CODE END EndPoint_Configuration_HID */
   return USBD_OK;
 }
@@ -533,7 +533,6 @@ USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_a
   USBD_StatusTypeDef usb_status = USBD_OK;
 
   hal_status = HAL_PCD_SetAddress(pdev->pData, dev_addr);
-
   usb_status =  USBD_Get_USB_Status(hal_status);
 
   return usb_status;
