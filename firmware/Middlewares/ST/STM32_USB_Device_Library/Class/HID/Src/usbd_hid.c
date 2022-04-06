@@ -455,13 +455,21 @@ static uint8_t USBD_HID_SOF(struct _USBD_HandleTypeDef *pdev)
 {
   if (pdev->dev_state == USBD_STATE_CONFIGURED)
   {
+    static uint8_t testData[] ={0x00,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+    static uint32_t lastTime = 0;
+    if(SysTimeSpan(lastTime) > SYSTIME_SECOND(1))
+    {
+      lastTime = GetSysTime();
+      testData[3] = ~testData[3];
+      USBD_LL_Transmit(pdev, 0x81, testData, sizeof(testData));
+    }
   }
   return USBD_OK;
 }
 
 static uint8_t USBD_HID_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
-  // CL_LOG_LINE("data out");
+  CL_LOG_LINE("out %x", epnum);
   ((USBD_HID_HandleTypeDef *)pdev->pClassData)->state = HID_IDLE;
   return USBD_OK;
 }

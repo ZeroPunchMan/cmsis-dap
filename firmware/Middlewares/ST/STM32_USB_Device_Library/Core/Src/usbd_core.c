@@ -263,7 +263,7 @@ USBD_StatusTypeDef USBD_ClrClassConfig(USBD_HandleTypeDef  *pdev, uint8_t cfgidx
 USBD_StatusTypeDef USBD_LL_SetupStage(USBD_HandleTypeDef *pdev, uint8_t *psetup)
 {
   USBD_ParseSetupRequest(&pdev->request, psetup);
-  CL_LOG_LINE("%x-%x", pdev->dev_address, pdev->request.wValue);
+  // CL_LOG_LINE("%x-%x", pdev->dev_address, pdev->request.wValue);
   pdev->ep0_state = USBD_EP0_SETUP;
 
   pdev->ep0_data_len = pdev->request.wLength;

@@ -156,7 +156,7 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
   // static uint8_t s[4] = {'d', '0', '\r', '\n'};
   // s[1] = epnum +0x30;
   // UsartSendData(USART1, s, 4);
-  CL_LOG_LINE("di %d", epnum);
+  // CL_LOG_LINE("di %d", epnum);
 }
 
 /**
