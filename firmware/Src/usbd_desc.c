@@ -63,12 +63,10 @@
  * @{
  */
 
-#define USBD_VID 0x045e
 #define USBD_LANGID_STRING 1033
 #define USBD_MANUFACTURER_STRING "Microsoft"
-#define USBD_PID_FS 0x02ea
-#define USBD_PRODUCT_STRING_FS "Controller"
-#define USBD_SERIAL_NUMBER "3032363030313035383432383234"
+#define USBD_PRODUCT_STRING_FS "Xbox360 Controller for Windows"
+#define USBD_SERIAL_NUMBER "00000000"
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -127,7 +125,7 @@ uint8_t *USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
 USBD_DescriptorsTypeDef FS_Desc = {
     .GetDeviceDescriptor = USBD_FS_DeviceDescriptor,
     .GetLangIDStrDescriptor = USBD_FS_LangIDStrDescriptor,
-    .GetManufacturerStrDescriptor = USBD_FS_ManufacturerStrDescriptor,
+    .GetManufacturerStrDescriptor = NULL,
     .GetProductStrDescriptor = USBD_FS_ProductStrDescriptor,
     .GetSerialStrDescriptor = USBD_FS_SerialStrDescriptor,
     .GetConfigurationStrDescriptor = NULL,
@@ -137,27 +135,10 @@ USBD_DescriptorsTypeDef FS_Desc = {
 #pragma data_alignment = 4
 #endif /* defined ( __ICCARM__ ) */
 /** USB standard device descriptor. */
-__ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
-    {
-        0x12,                 /*bLength */
-        USB_DESC_TYPE_DEVICE, /*bDescriptorType*/
-        0x00,                 /*bcdUSB */
-        0x02,
-        0xff,                /*bDeviceClass*/
-        0x47,                /*bDeviceSubClass*/
-        0xd0,                /*bDeviceProtocol*/
-        USB_MAX_EP0_SIZE,    /*bMaxPacketSize*/
-        LOBYTE(USBD_VID),    /*idVendor*/
-        HIBYTE(USBD_VID),    /*idVendor*/
-        LOBYTE(USBD_PID_FS), /*idProduct*/
-        HIBYTE(USBD_PID_FS), /*idProduct*/
-        0x01,                /*bcdDevice rel. 2.00*/
-        0x03,
-        USBD_IDX_MFC_STR,          /*Index of manufacturer  string*/
-        USBD_IDX_PRODUCT_STR,      /*Index of product string*/
-        USBD_IDX_SERIAL_STR,       /*Index of serial number string*/
-        USBD_MAX_NUM_CONFIGURATION /*bNumConfigurations*/
-};
+__ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
+    0x12, 0x01, 0x00, 0x02, 0xFF, 0xFF, 0xFF, 0x08, 
+    0x5E, 0x04, 0x8E, 0x02, 0x08, 0x06, 0x00, 0x02, 
+    0x03, 0x01};
 
 /* USB_DeviceDescriptor */
 
@@ -276,7 +257,6 @@ uint8_t *USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
     length[0] = maxLen;
   return USBD_StrDesc;
 }
-
 
 /**
  * @}

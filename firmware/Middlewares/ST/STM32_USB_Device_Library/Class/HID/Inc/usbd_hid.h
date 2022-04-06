@@ -41,15 +41,7 @@ extern "C" {
 /** @defgroup USBD_HID_Exported_Defines
   * @{
   */
-#define CON_INTR_EP_OUT (0x02)
-#define CON_INTR_EP_IN (0x82)
 
-#define USB_HID_CONFIG_DESC_SIZ       0x60
-#define USB_HID_DESC_SIZ              9U
-#define HID_MOUSE_REPORT_DESC_SIZE    74U
-
-#define HID_DESCRIPTOR_TYPE           0x21U
-#define HID_REPORT_DESC               0x22U
 
 #ifndef HID_HS_BINTERVAL
 #define HID_HS_BINTERVAL            0x07U
