@@ -66,7 +66,7 @@
 #define USBD_LANGID_STRING 1033
 #define USBD_MANUFACTURER_STRING "Microsoft"
 #define USBD_PRODUCT_STRING_FS "Xbox360 Controller for Windows"
-#define USBD_SERIAL_NUMBER "00000000"
+#define USBD_SERIAL_NUMBER "00000009"
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -136,9 +136,21 @@ USBD_DescriptorsTypeDef FS_Desc = {
 #endif /* defined ( __ICCARM__ ) */
 /** USB standard device descriptor. */
 __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
-    0x12, 0x01, 0x00, 0x02, 0xFF, 0xFF, 0xFF, 0x08, 
-    0x5E, 0x04, 0x8E, 0x02, 0x08, 0x06, 0x00, 0x02, 
-    0x03, 0x01};
+    0x12, //length 
+    0x01, //type device
+    0x00, 0x02, //usb version
+    0xFF, //device class
+    0xFF, //sub class
+    0xFF, //protocl
+    0x08, //max pack size
+    0x5E, 0x04, //verdor
+    0x8E, 0x02, //product
+    0x0a, 0x07, //device
+    0x00, //iManu
+    0x02, //iProduct
+    0x03, //iSerial
+    0x01  //bNumCfg
+    };
 
 /* USB_DeviceDescriptor */
 
