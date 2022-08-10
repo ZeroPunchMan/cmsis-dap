@@ -12,18 +12,20 @@
                 "${workspaceFolder}/application/daplink",
                 "${workspaceFolder}/Drivers/CMSIS/Include",
                 "${workspaceFolder}/Inc",
-                "${env:GANEINC}"
+                "${env:GANEINC}",
+                "${workspaceFolder}/common/armv7-m-helper"
             ],
             "defines": [
+                "__GNUC__",
                 "USE_FULL_LL_DRIVER",
                 "HSE_VALUE=8000000",
                 "STM32F103xB",
                 "PREFETCH_ENABLE=1",
-
-                "___int64_t_defined",
-                "___int8_t_defined",
-                "___int16_t_defined",
-                "___int32_t_defined"
+                "__STATIC_INLINE=static inline",
+                "__STATIC_FORCEINLINE=static inline",
+                "uint32_t=unsigned int",
+                "uint8_t=unsigned char",
+                "__ARM_ARCH_7M__=1"
             ],
             "cStandard": "c99",
             "cppStandard": "c++98",

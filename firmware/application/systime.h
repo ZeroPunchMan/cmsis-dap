@@ -23,3 +23,9 @@ static inline uint32_t GetSysTime(void)
 {
     return g_sysTime;
 }
+
+static inline void DelayOnSysTime(uint32_t time)
+{
+    uint32_t curTime = GetSysTime();
+    while(SysTimeSpan(curTime) < time);
+}

@@ -4,12 +4,12 @@
         "**/*.lst": true,
         "**/*.d": true,
         "**/*.o": true,
-        "build": true,
         ".mxproject": true,
-        "common/clib/testcase" : true,
-        "common/clib/Makefile" : true,
-        "common/clib/.vscode" : true,
-        "common/clib/.gitignore" : true
+        "common/clib/testcase": true,
+        "common/clib/Makefile": true,
+        "common/clib/.vscode": true,
+        "common/clib/.gitignore": true,
+        "build": true,
     },
     "files.associations": {
         "sys_time.h": "c",
@@ -36,7 +36,11 @@
         "stdbool.h": "c",
         "_stdint.h": "c",
         "_default_types.h": "c",
-        "_intsup.h": "c"
+        "_intsup.h": "c",
+        "armv7m_atomic.h": "c",
+        "mutex_arm7m.h": "c",
+        "cmsis_compiler.h": "c",
+        "atomic_arm7m.h": "c"
     },
     "workbench.editor.enablePreview": false
 }
