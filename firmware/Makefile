@@ -73,8 +73,7 @@ Src/usbd_conf.c \
 Src/usbd_desc.c \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
-Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
-Middlewares/ST/STM32_USB_Device_Library/Class/HID/Src/usbd_hid.c
+Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c 
 
 
 # ASM sources
@@ -141,7 +140,6 @@ C_INCLUDES =  \
 -IDrivers/STM32F1xx_HAL_Driver/Inc \
 -IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
 -IMiddlewares/ST/STM32_USB_Device_Library/Core/Inc \
--IMiddlewares/ST/STM32_USB_Device_Library/Class/HID/Inc \
 -IDrivers/CMSIS/Include
 
 C_INCLUDES += $(CLIB_INC)

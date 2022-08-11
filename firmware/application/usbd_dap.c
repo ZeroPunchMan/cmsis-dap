@@ -44,7 +44,7 @@
 EndBSPDependencies */
 
 /* Includes ------------------------------------------------------------------*/
-#include "usbd_hid.h"
+#include "usbd_dap.h"
 #include "usbd_ctlreq.h"
 
 
