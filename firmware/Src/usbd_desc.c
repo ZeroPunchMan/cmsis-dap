@@ -68,8 +68,8 @@
 #define USBD_MANUFACTURER_STRING     "STMicroelectronics"
 #define USBD_PID_FS     22315
 #define USBD_PRODUCT_STRING_FS     "STM32 Human interface"
-#define USBD_CONFIGURATION_STRING_FS     "HID Config"
-#define USBD_INTERFACE_STRING_FS     "HID Interface"
+#define USBD_CONFIGURATION_STRING_FS     "DAP Config"
+#define USBD_INTERFACE_STRING_FS     "DAP Interface"
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -160,7 +160,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   LOBYTE(USBD_PID_FS),        /*idProduct*/
   HIBYTE(USBD_PID_FS),        /*idProduct*/
   0x00,                       /*bcdDevice rel. 2.00*/
-  0x02,
+  0x01,
   USBD_IDX_MFC_STR,           /*Index of manufacturer  string*/
   USBD_IDX_PRODUCT_STR,       /*Index of product string*/
   USBD_IDX_SERIAL_STR,        /*Index of serial number string*/
