@@ -515,6 +515,17 @@ static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev,
             err++;
           }
           break;
+        case USBD_IDX_WIN_OS_STR:
+          if (pdev->pDesc->GetWinOsStrDescriptor != NULL)
+          {
+            pbuf = pdev->pDesc->GetWinOsStrDescriptor(pdev->dev_speed, &len);
+          }
+          else
+          {
+            USBD_CtlError(pdev, req);
+            err++;
+          }
+          break;
 
         default:
 #if (USBD_SUPPORT_USER_STRING_DESC == 1U)

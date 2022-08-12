@@ -2,6 +2,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_dap.h"
 #include "usbd_ctlreq.h"
+#include "usbd_desc.h"
 
 static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev,
                              uint8_t cfgidx);
@@ -113,6 +114,43 @@ __ALIGN_BEGIN static uint8_t USBD_DAP_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
         0x00,
 };
 
+
+__ALIGN_BEGIN uint8_t USBD_FS_OsCompIdDesc[] __ALIGN_END =
+{
+  0x28, 0x00, 0x00, 0x00, //length
+  0x00, 0x01, //version 1.0
+  0x04, 0x00, //Compatibility ID Descriptor index, fixed
+  0x01, //Number of sections
+  0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x00, //reserved 7 bytes
+  0x00, //interface num
+  0x01, //reserved
+  0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00, //compatible id, ascii capital only
+  0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x00, 0x00, //sub comptible id
+  0x00, 0x00, 0x00, 0x00,0x00, 0x00 //reserved 6 bytes
+};
+
+__ALIGN_BEGIN uint8_t USBD_FS_OsExtPropDesc[] __ALIGN_END =
+{
+  0x8e, 0x00, 0x00, 0x00, //total length
+  0x00, 0x01, //version 1.0
+  0x05, 0x00, //ext prop index, fixed
+  0x01, 0x00, //number of secitons
+  0x84, 0x00, 0x00, 0x00, //section length
+  0x01, 0x00, 0x00, 0x00, //property type: A NULL-terminated Unicode String
+  0x28, 0x00, //property name length
+  'D', 0x00, 'e', 0x00, 'v', 0x00, 'i', 0x00, 'c', 0x00, 'e', 0x00, 
+  'I', 0x00, 'n', 0x00, 't', 0x00, 'e', 0x00, 'r', 0x00, 'f', 0x00, 'a', 0x00, 'c', 0x00, 'e', 0x00, 
+  'G', 0x00, 'U', 0x00, 'I', 0x00, 'D', 0x00, 0x00, 0x00,  //name
+  0x4e, 0x00, 0x00, 0x00, //property data length
+  '{', 0x00, 'C', 0x00, 'D', 0x00, 'B', 0x00, '3', 0x00, 'B', 0x00, '5', 0x00, 'A', 0x00, 'D', 0x00, '-', 0x00, 
+  '2', 0x00, '9', 0x00, '3', 0x00, 'B', 0x00, '-', 0x00, 
+  '4', 0x00, '6', 0x00, '6', 0x00, '3', 0x00, '-', 0x00, 
+  'A', 0x00, 'A', 0x00, '3', 0x00, '6', 0x00, '-', 0x00, 
+  '1', 0x00, 'A', 0x00, 'A', 0x00, 'E', 0x00, '4', 0x00, '6', 0x00, '4', 0x00, '6', 0x00, '3', 0x00, '7', 0x00, '7', 0x00, '6', 0x00, 
+  '}', 0x00, 0x00, 0x00 //preperty data: GUID
+};
+
+
 /**
  * @}
  */
@@ -137,7 +175,7 @@ static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
     /* Open EP 2 */
     USBD_LL_OpenEP(pdev, DAP_EP2_ADDR, USBD_EP_TYPE_BULK, 64);
     pdev->ep_in[DAP_EP2_ADDR & 0xFU].is_used = 1U;
-    
+
     /* Open EP 3 */
     USBD_LL_OpenEP(pdev, DAP_EP3_ADDR, USBD_EP_TYPE_BULK, 64);
     pdev->ep_in[DAP_EP3_ADDR & 0xFU].is_used = 1U;
@@ -254,7 +292,29 @@ static uint8_t USBD_DAP_Setup(USBD_HandleTypeDef *pdev,
             break;
         }
         break;
-
+    case USB_REQ_TYPE_VENDOR:
+        if (req->bRequest == OS_STR_VENDOR)
+        {
+            switch (req->wIndex)
+            {
+            case 0x04: // WCID
+                USBD_CtlSendData(pdev, USBD_FS_OsCompIdDesc, sizeof(USBD_FS_OsCompIdDesc));
+                break;
+            case 0x05: // ext property
+                USBD_CtlSendData(pdev, USBD_FS_OsExtPropDesc, sizeof(USBD_FS_OsExtPropDesc));
+                break;
+            default:
+                USBD_CtlError(pdev, req);
+                ret = USBD_FAIL;
+                break;
+            }
+        }
+        else
+        {
+            USBD_CtlError(pdev, req);
+            ret = USBD_FAIL;
+        }
+        break;
     default:
         USBD_CtlError(pdev, req);
         ret = USBD_FAIL;
@@ -279,8 +339,8 @@ uint8_t USBD_DAP_SendData(USBD_HandleTypeDef *pdev,
 
     if (pdev->dev_state == USBD_STATE_CONFIGURED)
     {
-        if(epAddr == DAP_EP2_ADDR || epAddr == DAP_EP3_ADDR)
-        USBD_LL_Transmit(pdev, epAddr, data, len);
+        if (epAddr == DAP_EP2_ADDR || epAddr == DAP_EP3_ADDR)
+            USBD_LL_Transmit(pdev, epAddr, data, len);
     }
     return USBD_OK;
 }

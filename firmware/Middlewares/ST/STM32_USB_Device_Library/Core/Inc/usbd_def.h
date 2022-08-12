@@ -80,6 +80,7 @@ extern "C" {
 #define  USBD_IDX_SERIAL_STR                            0x03U
 #define  USBD_IDX_CONFIG_STR                            0x04U
 #define  USBD_IDX_INTERFACE_STR                         0x05U
+#define  USBD_IDX_WIN_OS_STR                            0xEEU
 
 #define  USB_REQ_TYPE_STANDARD                          0x00U
 #define  USB_REQ_TYPE_CLASS                             0x20U
@@ -218,6 +219,7 @@ typedef struct
   uint8_t  *(*GetSerialStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
   uint8_t  *(*GetConfigurationStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
   uint8_t  *(*GetInterfaceStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
+  uint8_t  *(*GetWinOsStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
 #if (USBD_LPM_ENABLED == 1U)
   uint8_t  *(*GetBOSDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
 #endif
