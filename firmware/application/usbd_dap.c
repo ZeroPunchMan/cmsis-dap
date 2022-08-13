@@ -3,6 +3,7 @@
 #include "usbd_dap.h"
 #include "usbd_ctlreq.h"
 #include "usbd_desc.h"
+#include "DAP_config.h"
 
 static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev,
                              uint8_t cfgidx);
@@ -18,6 +19,11 @@ static uint8_t *USBD_DAP_GetFSCfgDesc(uint16_t *length);
 static uint8_t *USBD_DAP_GetDeviceQualifierDesc(uint16_t *length);
 
 static uint8_t USBD_DAP_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
+
+static uint8_t USBD_DAP_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum);
+
+// static uint8_t USBD_DAP_SOF(struct _USBD_HandleTypeDef *pdev);
+
 /**
  * @}
  */
@@ -26,22 +32,21 @@ static uint8_t USBD_DAP_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
  * @{
  */
 
-USBD_ClassTypeDef USBD_DAP =
-    {
-        USBD_DAP_Init,
-        USBD_DAP_DeInit,
-        USBD_DAP_Setup,
-        NULL,            /*EP0_TxSent*/
-        NULL,            /*EP0_RxReady*/
-        USBD_DAP_DataIn, /*DataIn*/
-        NULL,            /*DataOut*/
-        NULL,            /*SOF */
-        NULL,
-        NULL,
-        NULL,
-        USBD_DAP_GetFSCfgDesc,
-        NULL,
-        USBD_DAP_GetDeviceQualifierDesc,
+USBD_ClassTypeDef USBD_DAP = {
+    .Init = USBD_DAP_Init,
+    .DeInit = USBD_DAP_DeInit,
+    .Setup = USBD_DAP_Setup,
+    .EP0_TxSent = NULL,          /*EP0_TxSent*/
+    .EP0_RxReady = NULL,         /*EP0_RxReady*/
+    .DataIn = USBD_DAP_DataIn,   /*DataIn*/
+    .DataOut = USBD_DAP_DataOut, /*DataOut*/
+    .SOF = NULL,                 /*SOF */
+    .IsoINIncomplete = NULL,
+    .IsoOUTIncomplete = NULL,
+    .GetHSConfigDescriptor = NULL,
+    .GetFSConfigDescriptor = USBD_DAP_GetFSCfgDesc,
+    .GetOtherSpeedConfigDescriptor = NULL,
+    .GetDeviceQualifierDescriptor = USBD_DAP_GetDeviceQualifierDesc,
 };
 
 /* USB device FS Configuration Descriptor */
@@ -72,9 +77,9 @@ __ALIGN_BEGIN static uint8_t USBD_DAP_CfgFSDesc[USB_DAP_CONFIG_DESC_SIZ] __ALIGN
         0x07,                   /*bLength: Endpoint Descriptor size*/
         USB_DESC_TYPE_ENDPOINT, /*bDescriptorType:*/
 
-        DAP_EP1_ADDR, /*bEndpointAddress: Endpoint Address (OUT)*/
-        0x02,         /*bmAttributes: bulk endpoint*/
-        64,           /*wMaxPacketSize: 64 Byte max */
+        DAP_EP1_ADDR,    /*bEndpointAddress: Endpoint Address (OUT)*/
+        0x02,            /*bmAttributes: bulk endpoint*/
+        DAP_PACKET_SIZE, /*wMaxPacketSize*/
         0x00,
         0, /*bInterval: Polling Interval */
         /******************** Descriptor of endpoint 2 ********************/
@@ -82,9 +87,9 @@ __ALIGN_BEGIN static uint8_t USBD_DAP_CfgFSDesc[USB_DAP_CONFIG_DESC_SIZ] __ALIGN
         0x07,                   /*bLength: Endpoint Descriptor size*/
         USB_DESC_TYPE_ENDPOINT, /*bDescriptorType:*/
 
-        DAP_EP2_ADDR, /*bEndpointAddress: Endpoint Address (OUT)*/
-        0x02,         /*bmAttributes: bulk endpoint*/
-        64,           /*wMaxPacketSize: 64 Byte max */
+        DAP_EP2_ADDR,    /*bEndpointAddress: Endpoint Address (OUT)*/
+        0x02,            /*bmAttributes: bulk endpoint*/
+        DAP_PACKET_SIZE, /*wMaxPacketSize*/
         0x00,
         0, /*bInterval: Polling Interval */
         /******************** Descriptor of endpoint 3 ********************/
@@ -92,9 +97,9 @@ __ALIGN_BEGIN static uint8_t USBD_DAP_CfgFSDesc[USB_DAP_CONFIG_DESC_SIZ] __ALIGN
         0x07,                   /*bLength: Endpoint Descriptor size*/
         USB_DESC_TYPE_ENDPOINT, /*bDescriptorType:*/
 
-        DAP_EP3_ADDR, /*bEndpointAddress: Endpoint Address (OUT)*/
-        0x02,         /*bmAttributes: bulk endpoint*/
-        64,           /*wMaxPacketSize: 64 Byte max */
+        DAP_EP3_ADDR,    /*bEndpointAddress: Endpoint Address (OUT)*/
+        0x02,            /*bmAttributes: bulk endpoint*/
+        DAP_PACKET_SIZE, /*wMaxPacketSize*/
         0x00,
         0, /*bInterval: Polling Interval */
 };
@@ -114,42 +119,42 @@ __ALIGN_BEGIN static uint8_t USBD_DAP_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
         0x00,
 };
 
-
 __ALIGN_BEGIN uint8_t USBD_FS_OsCompIdDesc[] __ALIGN_END =
-{
-  0x28, 0x00, 0x00, 0x00, //length
-  0x00, 0x01, //version 1.0
-  0x04, 0x00, //Compatibility ID Descriptor index, fixed
-  0x01, //Number of sections
-  0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x00, //reserved 7 bytes
-  0x00, //interface num
-  0x01, //reserved
-  0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00, //compatible id, ascii capital only
-  0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x00, 0x00, //sub comptible id
-  0x00, 0x00, 0x00, 0x00,0x00, 0x00 //reserved 6 bytes
+    {
+        0x28, 0x00, 0x00, 0x00,                         // length
+        0x00, 0x01,                                     // version 1.0
+        0x04, 0x00,                                     // Compatibility ID Descriptor index, fixed
+        0x01,                                           // Number of sections
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,       // reserved 7 bytes
+        0x00,                                           // interface num
+        0x01,                                           // reserved
+        0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00, // compatible id, ascii capital only
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // sub comptible id
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00              // reserved 6 bytes
 };
 
 __ALIGN_BEGIN uint8_t USBD_FS_OsExtPropDesc[] __ALIGN_END =
-{
-  0x8e, 0x00, 0x00, 0x00, //total length
-  0x00, 0x01, //version 1.0
-  0x05, 0x00, //ext prop index, fixed
-  0x01, 0x00, //number of secitons
-  0x84, 0x00, 0x00, 0x00, //section length
-  0x01, 0x00, 0x00, 0x00, //property type: A NULL-terminated Unicode String
-  0x28, 0x00, //property name length
-  'D', 0x00, 'e', 0x00, 'v', 0x00, 'i', 0x00, 'c', 0x00, 'e', 0x00, 
-  'I', 0x00, 'n', 0x00, 't', 0x00, 'e', 0x00, 'r', 0x00, 'f', 0x00, 'a', 0x00, 'c', 0x00, 'e', 0x00, 
-  'G', 0x00, 'U', 0x00, 'I', 0x00, 'D', 0x00, 0x00, 0x00,  //name
-  0x4e, 0x00, 0x00, 0x00, //property data length
-  '{', 0x00, 'C', 0x00, 'D', 0x00, 'B', 0x00, '3', 0x00, 'B', 0x00, '5', 0x00, 'A', 0x00, 'D', 0x00, '-', 0x00, 
-  '2', 0x00, '9', 0x00, '3', 0x00, 'B', 0x00, '-', 0x00, 
-  '4', 0x00, '6', 0x00, '6', 0x00, '3', 0x00, '-', 0x00, 
-  'A', 0x00, 'A', 0x00, '3', 0x00, '6', 0x00, '-', 0x00, 
-  '1', 0x00, 'A', 0x00, 'A', 0x00, 'E', 0x00, '4', 0x00, '6', 0x00, '4', 0x00, '6', 0x00, '3', 0x00, '7', 0x00, '7', 0x00, '6', 0x00, 
-  '}', 0x00, 0x00, 0x00 //preperty data: GUID
+    {
+        0x8e, 0x00, 0x00, 0x00, // total length
+        0x00, 0x01,             // version 1.0
+        0x05, 0x00,             // ext prop index, fixed
+        0x01, 0x00,             // number of secitons
+        0x84, 0x00, 0x00, 0x00, // section length
+        0x01, 0x00, 0x00, 0x00, // property type: A NULL-terminated Unicode String
+        0x28, 0x00,             // property name length
+        'D', 0x00, 'e', 0x00, 'v', 0x00, 'i', 0x00, 'c', 0x00, 'e', 0x00,
+        'I', 0x00, 'n', 0x00, 't', 0x00, 'e', 0x00, 'r', 0x00, 'f', 0x00, 'a', 0x00, 'c', 0x00, 'e', 0x00,
+        'G', 0x00, 'U', 0x00, 'I', 0x00, 'D', 0x00, 0x00, 0x00, // name
+        0x4e, 0x00, 0x00, 0x00,                                 // property data length
+        '{', 0x00, 'C', 0x00, 'D', 0x00, 'B', 0x00, '3', 0x00, 'B', 0x00, '5', 0x00, 'A', 0x00, 'D', 0x00, '-', 0x00,
+        '2', 0x00, '9', 0x00, '3', 0x00, 'B', 0x00, '-', 0x00,
+        '4', 0x00, '6', 0x00, '6', 0x00, '3', 0x00, '-', 0x00,
+        'A', 0x00, 'A', 0x00, '3', 0x00, '6', 0x00, '-', 0x00,
+        '1', 0x00, 'A', 0x00, 'A', 0x00, 'E', 0x00, '4', 0x00, '6', 0x00, '4', 0x00, '6', 0x00, '3', 0x00, '7', 0x00, '7', 0x00, '6', 0x00,
+        '}', 0x00, 0x00, 0x00 // preperty data: GUID
 };
 
+__ALIGN_BEGIN static uint8_t ep1RecvBuff[DAP_PACKET_SIZE] __ALIGN_END;
 
 /**
  * @}
@@ -169,15 +174,15 @@ __ALIGN_BEGIN uint8_t USBD_FS_OsExtPropDesc[] __ALIGN_END =
 static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
     /* Open EP 1 */
-    USBD_LL_OpenEP(pdev, DAP_EP1_ADDR, USBD_EP_TYPE_BULK, 64);
+    USBD_LL_OpenEP(pdev, DAP_EP1_ADDR, USBD_EP_TYPE_BULK, DAP_PACKET_SIZE);
     pdev->ep_out[DAP_EP1_ADDR & 0xFU].is_used = 1U;
 
     /* Open EP 2 */
-    USBD_LL_OpenEP(pdev, DAP_EP2_ADDR, USBD_EP_TYPE_BULK, 64);
+    USBD_LL_OpenEP(pdev, DAP_EP2_ADDR, USBD_EP_TYPE_BULK, DAP_PACKET_SIZE);
     pdev->ep_in[DAP_EP2_ADDR & 0xFU].is_used = 1U;
 
     /* Open EP 3 */
-    USBD_LL_OpenEP(pdev, DAP_EP3_ADDR, USBD_EP_TYPE_BULK, 64);
+    USBD_LL_OpenEP(pdev, DAP_EP3_ADDR, USBD_EP_TYPE_BULK, DAP_PACKET_SIZE);
     pdev->ep_in[DAP_EP3_ADDR & 0xFU].is_used = 1U;
 
     pdev->pClassData = USBD_malloc(sizeof(USBD_DAP_HandleTypeDef));
@@ -186,6 +191,8 @@ static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
     {
         return USBD_FAIL;
     }
+
+    USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, ep1RecvBuff, sizeof(ep1RecvBuff));
 
     return USBD_OK;
 }
@@ -365,14 +372,30 @@ static uint8_t *USBD_DAP_GetFSCfgDesc(uint16_t *length)
  * @param  epnum: endpoint index
  * @retval status
  */
-static uint8_t USBD_DAP_DataIn(USBD_HandleTypeDef *pdev,
-                               uint8_t epnum)
+static uint8_t USBD_DAP_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
-
     /* Ensure that the FIFO is empty before a new transfer, this condition could
     be caused by  a new transfer before the end of the previous transfer */
+    if (epnum == DAP_EP2_ADDR)
+    {
+    }
     return USBD_OK;
 }
+
+static uint8_t USBD_DAP_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum)
+{
+    if (epnum == DAP_EP1_ADDR)
+    {
+        uint32_t len = USBD_LL_GetRxDataSize(pdev, DAP_EP1_ADDR);
+        USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, ep1RecvBuff, sizeof(ep1RecvBuff));
+    }
+    return USBD_OK;
+}
+
+// static uint8_t USBD_DAP_SOF(struct _USBD_HandleTypeDef *pdev)
+// {
+//     return USBD_OK;
+// }
 
 /**
  * @brief  DeviceQualifierDescriptor

@@ -40,7 +40,8 @@
         "armv7m_atomic.h": "c",
         "mutex_arm7m.h": "c",
         "cmsis_compiler.h": "c",
-        "atomic_arm7m.h": "c"
+        "atomic_arm7m.h": "c",
+        "dap.h": "c"
     },
     "workbench.editor.enablePreview": false
 }
