@@ -4,6 +4,7 @@
 #include "usbd_ctlreq.h"
 #include "usbd_desc.h"
 #include "DAP_config.h"
+#include "cl_log.h"
 
 static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev,
                              uint8_t cfgidx);
@@ -121,16 +122,16 @@ __ALIGN_BEGIN static uint8_t USBD_DAP_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
 
 __ALIGN_BEGIN uint8_t USBD_FS_OsCompIdDesc[] __ALIGN_END =
     {
-        0x28, 0x00, 0x00, 0x00,                         // length
-        0x00, 0x01,                                     // version 1.0
-        0x04, 0x00,                                     // Compatibility ID Descriptor index, fixed
-        0x01,                                           // Number of sections
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,       // reserved 7 bytes
-        0x00,                                           // interface num
-        0x01,                                           // reserved
-        0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00, // compatible id, ascii capital only
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // sub comptible id
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00              // reserved 6 bytes
+        0x28, 0x00, 0x00, 0x00,                         // length 
+        0x00, 0x01,                                     // version 1.0 
+        0x04, 0x00,                                     // Compatibility ID Descriptor index, fixed 
+        0x01,                                           // Number of sections  
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,       // reserved 7 bytes 
+        0x00,                                           // interface num 
+        0x01,                                           // reserved 
+        'W', 'I', 'N', 'U', 'S', 'B', 0x00, 0x00, // compatible id, ascii capital only 
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // sub comptible id 
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00              // reserved 6 bytes 
 };
 
 __ALIGN_BEGIN uint8_t USBD_FS_OsExtPropDesc[] __ALIGN_END =
@@ -305,10 +306,12 @@ static uint8_t USBD_DAP_Setup(USBD_HandleTypeDef *pdev,
             switch (req->wIndex)
             {
             case 0x04: // WCID
-                USBD_CtlSendData(pdev, USBD_FS_OsCompIdDesc, sizeof(USBD_FS_OsCompIdDesc));
+                USBD_CtlSendData(pdev, USBD_FS_OsCompIdDesc, MIN(req->wLength, sizeof(USBD_FS_OsCompIdDesc)));
+                CL_LOG_LINE("wcid");
                 break;
             case 0x05: // ext property
-                USBD_CtlSendData(pdev, USBD_FS_OsExtPropDesc, sizeof(USBD_FS_OsExtPropDesc));
+                USBD_CtlSendData(pdev, USBD_FS_OsExtPropDesc, MIN(req->wLength, sizeof(USBD_FS_OsExtPropDesc)));
+                CL_LOG_LINE("extprop:%x", req->wLength);
                 break;
             default:
                 USBD_CtlError(pdev, req);
@@ -361,6 +364,7 @@ uint8_t USBD_DAP_SendData(USBD_HandleTypeDef *pdev,
  */
 static uint8_t *USBD_DAP_GetFSCfgDesc(uint16_t *length)
 {
+    CL_LOG_LINE("cfgdesc");
     *length = sizeof(USBD_DAP_CfgFSDesc);
     return USBD_DAP_CfgFSDesc;
 }
@@ -405,6 +409,7 @@ static uint8_t USBD_DAP_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum)
  */
 static uint8_t *USBD_DAP_GetDeviceQualifierDesc(uint16_t *length)
 {
+    CL_LOG_LINE("qualidesc");
     *length = sizeof(USBD_DAP_DeviceQualifierDesc);
     return USBD_DAP_DeviceQualifierDesc;
 }

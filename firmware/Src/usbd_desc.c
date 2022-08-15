@@ -23,7 +23,7 @@
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_conf.h"
-
+#include "cl_log.h"
 /* USER CODE BEGIN INCLUDE */
 
 /* USER CODE END INCLUDE */
@@ -63,11 +63,11 @@
   * @{
   */
 
-#define USBD_VID     1155
+#define USBD_VID     0xc251
 #define USBD_LANGID_STRING     1033
-#define USBD_MANUFACTURER_STRING     "STMicroelectronics"
-#define USBD_PID_FS     22315
-#define USBD_PRODUCT_STRING_FS     "STM32 Human interface"
+#define USBD_MANUFACTURER_STRING     "dap manu"
+#define USBD_PID_FS     0xf001
+#define USBD_PRODUCT_STRING_FS     "CMSIS-DAP"
 #define USBD_CONFIGURATION_STRING_FS     "DAP Config"
 #define USBD_INTERFACE_STRING_FS     "DAP Interface"
 
@@ -173,7 +173,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_WinOsStrDesc[] __ALIGN_END =
 {
   0x12, //Length of the descriptor
   0x03, //Descriptor type 
-  0x4D, 0x00, 0x53, 0x00, 0x31, 0x00, 0x30, 0x00, 0x46, 0x00, 0x54, 0x00, 0x30, 0x00, //MSFT100
+  'M', 0x00, 'S', 0x00, 'F', 0x00, 'T', 0x00, '1', 0x00, '0', 0x00, '0', 0x00, //MSFT100
   OS_STR_VENDOR, //Vendor code
   0x00 //Pad field
 };
@@ -233,6 +233,7 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {
   */
 uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
+  CL_LOG_LINE("devdesc");
   UNUSED(speed);
   *length = sizeof(USBD_FS_DeviceDesc);
   return USBD_FS_DeviceDesc;
@@ -246,6 +247,7 @@ uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t * USBD_FS_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
+  CL_LOG_LINE("laniddesc");
   UNUSED(speed);
   *length = sizeof(USBD_LangIDDesc);
   return USBD_LangIDDesc;
@@ -259,6 +261,7 @@ uint8_t * USBD_FS_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
+  CL_LOG_LINE("prdstrdesc");
   if(speed == 0)
   {
     USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
@@ -278,6 +281,7 @@ uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length
   */
 uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
+  CL_LOG_LINE("manustrdesc");
   UNUSED(speed);
   USBD_GetString((uint8_t *)USBD_MANUFACTURER_STRING, USBD_StrDesc, length);
   return USBD_StrDesc;
@@ -291,6 +295,7 @@ uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *l
   */
 uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
+  CL_LOG_LINE("serstrdesc");
   UNUSED(speed);
   *length = USB_SIZ_STRING_SERIAL;
 
@@ -311,6 +316,7 @@ uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
+  CL_LOG_LINE("cfgstrdesc");
   if(speed == USBD_SPEED_HIGH)
   {
     USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING_FS, USBD_StrDesc, length);
@@ -330,6 +336,7 @@ uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
+  CL_LOG_LINE("itfstrdesc");
   if(speed == 0)
   {
     USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
@@ -344,6 +351,7 @@ uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
 // window os descriptor
 uint8_t * USBD_FS_WinOsStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
+  CL_LOG_LINE("osstrdesc");
   *length = sizeof(USBD_FS_WinOsStrDesc);
   return USBD_FS_WinOsStrDesc;
 }

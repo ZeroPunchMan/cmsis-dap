@@ -41,7 +41,8 @@
         "mutex_arm7m.h": "c",
         "cmsis_compiler.h": "c",
         "atomic_arm7m.h": "c",
-        "dap.h": "c"
+        "dap.h": "c",
+        "usbd_core.h": "c"
     },
     "workbench.editor.enablePreview": false
 }

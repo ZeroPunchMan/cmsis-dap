@@ -121,7 +121,7 @@ void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_SetupStage((USBD_HandleTypeDef*)hpcd->pData, (uint8_t *)hpcd->Setup);
-  CL_LOG_LINE("setup st");
+  // CL_LOG_LINE("stup");
 }
 
 /**
@@ -137,7 +137,7 @@ void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DataOutStage((USBD_HandleTypeDef*)hpcd->pData, epnum, hpcd->OUT_ep[epnum].xfer_buff);
-  CL_LOG_LINE("datout st");
+  // CL_LOG_LINE("datout st");
 }
 
 /**
@@ -153,7 +153,7 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DataInStage((USBD_HandleTypeDef*)hpcd->pData, epnum, hpcd->IN_ep[epnum].xfer_buff);
-  CL_LOG_LINE("datin st");
+  // CL_LOG_LINE("datin st");
 }
 
 /**
@@ -168,7 +168,13 @@ void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_SOF((USBD_HandleTypeDef*)hpcd->pData);
-  CL_LOG_LINE("sof");
+  static uint16_t count = 0;
+  count++;
+  if(count >= 500)
+  {
+    count = 0;
+    CL_LOG_LINE("sof");
+  }
 }
 
 /**

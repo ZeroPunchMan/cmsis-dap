@@ -115,7 +115,6 @@ USBD_StatusTypeDef  USBD_StdDevReq(USBD_HandleTypeDef *pdev,
                                    USBD_SetupReqTypedef *req)
 {
   USBD_StatusTypeDef ret = USBD_OK;
-
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
   {
     case USB_REQ_TYPE_CLASS:
@@ -175,11 +174,12 @@ USBD_StatusTypeDef  USBD_StdDevReq(USBD_HandleTypeDef *pdev,
 * @param  req: usb request
 * @retval status
 */
+#include "cl_log.h"
 USBD_StatusTypeDef  USBD_StdItfReq(USBD_HandleTypeDef *pdev,
                                    USBD_SetupReqTypedef  *req)
 {
   USBD_StatusTypeDef ret = USBD_OK;
-
+  
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
   {
     case USB_REQ_TYPE_CLASS:
@@ -190,8 +190,7 @@ USBD_StatusTypeDef  USBD_StdItfReq(USBD_HandleTypeDef *pdev,
         case USBD_STATE_DEFAULT:
         case USBD_STATE_ADDRESSED:
         case USBD_STATE_CONFIGURED:
-
-          if (LOBYTE(req->wIndex) <= USBD_MAX_NUM_INTERFACES)
+          // if (LOBYTE(req->wIndex) <= USBD_MAX_NUM_INTERFACES)
           {
             ret = (USBD_StatusTypeDef)pdev->pClass->Setup(pdev, req);
 
@@ -200,10 +199,10 @@ USBD_StatusTypeDef  USBD_StdItfReq(USBD_HandleTypeDef *pdev,
               USBD_CtlSendStatus(pdev);
             }
           }
-          else
-          {
-            USBD_CtlError(pdev, req);
-          }
+          // else
+          // {
+          //   USBD_CtlError(pdev, req);
+          // }
           break;
 
         default:
@@ -394,7 +393,7 @@ USBD_StatusTypeDef  USBD_StdEPReq(USBD_HandleTypeDef *pdev,
   return ret;
 }
 
-
+#include "cl_log.h"
 /**
 * @brief  USBD_GetDescriptor
 *         Handle Get Descriptor requests
@@ -553,6 +552,7 @@ static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev,
       }
       else
       {
+        CL_LOG_LINE("qualerr");
         USBD_CtlError(pdev, req);
         err++;
       }
