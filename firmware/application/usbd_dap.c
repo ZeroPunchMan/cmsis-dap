@@ -5,6 +5,7 @@
 #include "usbd_desc.h"
 #include "DAP_config.h"
 #include "cl_log.h"
+#include "dap_agent.h"
 
 static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev,
                              uint8_t cfgidx);
@@ -391,6 +392,7 @@ static uint8_t USBD_DAP_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum)
     if (epnum == DAP_EP1_ADDR)
     {
         uint32_t len = USBD_LL_GetRxDataSize(pdev, DAP_EP1_ADDR);
+        DapAgent_AddPacket(ep1RecvBuff, len);
         USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, ep1RecvBuff, sizeof(ep1RecvBuff));
     }
     return USBD_OK;
