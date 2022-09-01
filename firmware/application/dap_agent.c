@@ -14,13 +14,16 @@ uint8_t *DapAgent_GetCmdBuff(void)
     uint8_t *pBuff = NULL;
     int res = MultiBufferGetNextBack(&cmdMulitBuff, &pBuff);
     if (res != 0)
-    { //error, shouldn't be
+    { // error, shouldn't be
     }
     return pBuff;
 }
 
 bool DapAgent_CmdRecvDone(uint32_t len)
 {
+    uint8_t *pBuff = NULL;
+    MultiBufferGetNextBack(&cmdMulitBuff, &pBuff);
+    CL_LOG_LINE("cmd:%d,len:%ld", pBuff[0], len);
     return MultiBufferPush(&cmdMulitBuff, len) == 0;
 }
 
@@ -38,7 +41,7 @@ static void DapAgent_RecvProc(void)
     uint32_t bufLen;
     MultiBufferPeek(&cmdMulitBuff, 0, &pRecvBuff, &bufLen);
 
-    uint8_t* pRspBuff;
+    uint8_t *pRspBuff;
     uint16_t rspLen = 0;
     if (pRecvBuff[0] == ID_DAP_QueueCommands)
     {
@@ -60,6 +63,7 @@ static void DapAgent_RecvProc(void)
             {
                 MultiBufferPeek(&cmdMulitBuff, 0, &pRecvBuff, &bufLen);
 
+                pRecvBuff[0] = ID_DAP_ExecuteCommands;
                 MultiBufferGetNextBack(&rspMultiBuff, &pRspBuff);
                 rspLen = DAP_ExecuteCommand(pRecvBuff, pRspBuff);
                 MultiBufferPush(&rspMultiBuff, rspLen);
@@ -73,6 +77,8 @@ static void DapAgent_RecvProc(void)
         MultiBufferGetNextBack(&rspMultiBuff, &pRspBuff);
         rspLen = DAP_ExecuteCommand(pRecvBuff, pRspBuff);
         MultiBufferPush(&rspMultiBuff, rspLen);
+
+        MultiBufferPop(&cmdMulitBuff);
     }
 }
 
@@ -81,9 +87,9 @@ void DapAgent_Process(void)
     DapAgent_RecvProc();
 }
 
-bool DapAgent_GetRspBuff(uint8_t** ppbuff, uint32_t* pLen)
+bool DapAgent_GetRspBuff(uint8_t **ppbuff, uint32_t *pLen)
 {
-    if(MultiBufferGetCount(&rspMultiBuff) > 0)
+    if (MultiBufferGetCount(&rspMultiBuff) > 0)
     {
         MultiBufferPeek(&rspMultiBuff, 0, ppbuff, pLen);
         return true;

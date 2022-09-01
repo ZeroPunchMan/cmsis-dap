@@ -156,7 +156,7 @@ static const char TargetBoardName    [] = TARGET_BOARD_NAME;
 #endif
 
 #define VENDOR_ID "Lyj"
-#define PRODUCT_ID "LyjDapLink"
+#define PRODUCT_ID "CMSIS-DAP"
 #define SERIAL_NUMBER "000001"
 
 /** Get Vendor Name string.

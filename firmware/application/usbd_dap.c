@@ -164,6 +164,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_OsExtPropDesc[] __ALIGN_END =
  * @{
  */
 
+uint8_t* recvBuff = NULL;
 /**
  * @brief  USBD_DAP_Init
  *         Initialize the interface
@@ -192,7 +193,8 @@ static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
         return USBD_FAIL;
     }
 
-    USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, DapAgent_GetCmdBuff(), DAP_PACKET_SIZE);
+    recvBuff = DapAgent_GetCmdBuff();
+    USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, recvBuff, DAP_PACKET_SIZE);
 
     return USBD_OK;
 }
@@ -402,21 +404,26 @@ static uint8_t USBD_DAP_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum)
     {
         uint32_t len = USBD_LL_GetRxDataSize(pdev, DAP_EP1_ADDR);
         DapAgent_CmdRecvDone(len);
-        USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, DapAgent_GetCmdBuff(), DAP_PACKET_SIZE);
+
+        recvBuff = DapAgent_GetCmdBuff();
+        USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, recvBuff, DAP_PACKET_SIZE);
     }
     return USBD_OK;
 }
 
 static uint8_t USBD_DAP_SOF(struct _USBD_HandleTypeDef *pdev)
 {
-    if(!cmdRspSending)
+    if(pdev->dev_state == USBD_STATE_CONFIGURED)
     {
-        uint8_t* pBuff;
-        uint32_t length;
-        if(DapAgent_GetRspBuff(&pBuff, &length))
+        if(!cmdRspSending)
         {
-            USBD_LL_Transmit(pdev, DAP_EP2_ADDR, pBuff, length);
-            cmdRspSending = true;
+            uint8_t* pBuff;
+            uint32_t length;
+            if(DapAgent_GetRspBuff(&pBuff, &length))
+            {
+                USBD_LL_Transmit(pdev, DAP_EP2_ADDR, pBuff, length);
+                cmdRspSending = true;
+            }
         }
     }
     return USBD_OK;
