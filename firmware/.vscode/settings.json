@@ -42,7 +42,10 @@
         "cmsis_compiler.h": "c",
         "atomic_arm7m.h": "c",
         "dap.h": "c",
-        "usbd_core.h": "c"
+        "usbd_core.h": "c",
+        "limits": "c",
+        "multi_buffer.h": "c",
+        "typeinfo": "c"
     },
     "workbench.editor.enablePreview": false
 }

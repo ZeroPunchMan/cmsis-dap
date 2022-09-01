@@ -97,7 +97,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  DapAgent_Init();
+  // DapAgent_Init();
   // CL_LOG_LINE("init done");
   while (1)
   {
@@ -118,6 +118,7 @@ int main(void)
       else
         LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_8);
     }
+    // DapAgent_Process();
   }
   /* USER CODE END 3 */
 }

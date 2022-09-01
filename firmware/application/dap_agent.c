@@ -4,25 +4,24 @@
 #include "cl_queue.h"
 #include "DAP_config.h"
 #include "DAP.h"
+#include "multi_buffer.h"
 
+MULTIBUFFER_STATIC_DEF(cmdMulitBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 2, static);
+MULTIBUFFER_STATIC_DEF(rspMultiBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 2, static);
 
-typedef struct
+uint8_t *DapAgent_GetCmdBuff(void)
 {
-    uint8_t cmdBuff[DAP_PACKET_SIZE];
-} DapCmd_t;
+    uint8_t *pBuff = NULL;
+    int res = MultiBufferGetNextBack(&cmdMulitBuff, &pBuff);
+    if (res != 0)
+    { //error, shouldn't be
+    }
+    return pBuff;
+}
 
-
-uint8_t rspTotalBuff[DAP_PACKET_SIZE * DAP_PACKET_COUNT];
-
-CL_QUEUE_DEF_INIT(cmdQueue, DAP_PACKET_COUNT * 2, DapCmd_t, static);
-
-CL_Result_t DapAgent_AddPacket(const uint8_t *buff, uint16_t len)
+bool DapAgent_CmdRecvDone(uint32_t len)
 {
-    const DapCmd_t* dapCmd = (const DapCmd_t*)buff;
-    CL_QueueAdd(&cmdQueue, dapCmd);
-    CL_LOG_LINE("cmd:%x,%x", buff[0], len);
-
-    return CL_ResSuccess;
+    return MultiBufferPush(&cmdMulitBuff, len) == 0;
 }
 
 void DapAgent_Init(void)
@@ -30,16 +29,70 @@ void DapAgent_Init(void)
     DAP_Setup();
 }
 
-void DapAgent_Process(void)
+static void DapAgent_RecvProc(void)
 {
-    DapCmd_t* pFirstCmd;
-    if(CL_QueuePeek(&cmdQueue, &pFirstCmd) == CL_ResSuccess)
+    if (MultiBufferGetCount(&cmdMulitBuff) == 0)
+        return;
+
+    uint8_t *pRecvBuff;
+    uint32_t bufLen;
+    MultiBufferPeek(&cmdMulitBuff, 0, &pRecvBuff, &bufLen);
+
+    uint8_t* pRspBuff;
+    uint16_t rspLen = 0;
+    if (pRecvBuff[0] == ID_DAP_QueueCommands)
     {
-        if(pFirstCmd->cmdBuff[0] < ID_DAP_QueueCommands) //command
-        {   
-            DAP_ProcessCommand(pFirstCmd->cmdBuff, )
-            CL_QueuePoll(&cmdQueue, CL_NULL);
+        uint8_t *pEnd;
+        uint16_t endIdx = UINT16_MAX;
+        for (uint16_t i = 1; i < MultiBufferGetCount(&cmdMulitBuff); i++)
+        {
+            MultiBufferPeek(&cmdMulitBuff, i, &pEnd, &bufLen);
+            if (pEnd[0] != ID_DAP_QueueCommands)
+            {
+                endIdx = i;
+                break;
+            }
         }
+
+        if (endIdx != UINT16_MAX)
+        {
+            for (uint16_t i = 0; i < endIdx; i++)
+            {
+                MultiBufferPeek(&cmdMulitBuff, 0, &pRecvBuff, &bufLen);
+
+                MultiBufferGetNextBack(&rspMultiBuff, &pRspBuff);
+                rspLen = DAP_ExecuteCommand(pRecvBuff, pRspBuff);
+                MultiBufferPush(&rspMultiBuff, rspLen);
+
+                MultiBufferPop(&cmdMulitBuff);
+            }
+        }
+    }
+    else if (pRecvBuff[0] == ID_DAP_ExecuteCommands || pRecvBuff[0] < ID_DAP_QueueCommands)
+    {
+        MultiBufferGetNextBack(&rspMultiBuff, &pRspBuff);
+        rspLen = DAP_ExecuteCommand(pRecvBuff, pRspBuff);
+        MultiBufferPush(&rspMultiBuff, rspLen);
     }
 }
 
+void DapAgent_Process(void)
+{
+    DapAgent_RecvProc();
+}
+
+bool DapAgent_GetRspBuff(uint8_t** ppbuff, uint32_t* pLen)
+{
+    if(MultiBufferGetCount(&rspMultiBuff) > 0)
+    {
+        MultiBufferPeek(&rspMultiBuff, 0, ppbuff, pLen);
+        return true;
+    }
+
+    return false;
+}
+
+void DapAgent_RspSendDone(void)
+{
+    MultiBufferPop(&rspMultiBuff);
+}

@@ -142,10 +142,10 @@ C_INCLUDES =  \
 -IMiddlewares/ST/STM32_USB_Device_Library/Core/Inc \
 -IDrivers/CMSIS/Include
 
-C_INCLUDES += $(CLIB_INC)
+C_INCLUDES += $(COMMON_INC)
 C_INCLUDES += $(APP_INC)
 
-C_SOURCES += $(CLIB_SRC)
+C_SOURCES += $(COMMON_SRC)
 C_SOURCES += $(APP_SRC)
 
 # compile gcc flags
@@ -219,7 +219,7 @@ clean:
 	$(RM_CMD) $(BUILD_DIR)
 
 test:
-	echo $(CLIB_SRC)
+	echo $(COMMON_SRC)
 
 #######################################
 # dependencies

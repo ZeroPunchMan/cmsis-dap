@@ -5,6 +5,10 @@
 void DapAgent_Init(void);
 void DapAgent_Process(void);
 
-CL_Result_t DapAgent_AddPacket(const uint8_t *buff, uint16_t len);
+uint8_t* DapAgent_GetCmdBuff(void);
+bool DapAgent_CmdRecvDone(uint32_t len);
+
+bool DapAgent_GetRspBuff(uint8_t** ppbuff, uint32_t* pLen);
+void DapAgent_RspSendDone(void);
 
 void DapAgent_Test(void);

@@ -1,8 +1,9 @@
 
-CLIB_SRC = $(wildcard common/clib/src/*.c)
+COMMON_SRC = $(wildcard common/clib/src/*.c) \
+	$(wildcard common/armv7-m-helper/*.c)
 
-CLIB_INC = -Icommon/clib/inc \
-	-Icommon/
+COMMON_INC = -Icommon/clib/inc \
+	-Icommon/ \
+	-Icommon/armv7-m-helper
 
-HELPER_INC = -Icommon/armv7-m-helper
 

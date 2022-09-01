@@ -24,7 +24,7 @@ static uint8_t USBD_DAP_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
 
 static uint8_t USBD_DAP_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum);
 
-// static uint8_t USBD_DAP_SOF(struct _USBD_HandleTypeDef *pdev);
+static uint8_t USBD_DAP_SOF(struct _USBD_HandleTypeDef *pdev);
 
 /**
  * @}
@@ -42,7 +42,7 @@ USBD_ClassTypeDef USBD_DAP = {
     .EP0_RxReady = NULL,         /*EP0_RxReady*/
     .DataIn = USBD_DAP_DataIn,   /*DataIn*/
     .DataOut = USBD_DAP_DataOut, /*DataOut*/
-    .SOF = NULL,                 /*SOF */
+    .SOF = USBD_DAP_SOF,         /*SOF */
     .IsoINIncomplete = NULL,
     .IsoOUTIncomplete = NULL,
     .GetHSConfigDescriptor = NULL,
@@ -123,16 +123,16 @@ __ALIGN_BEGIN static uint8_t USBD_DAP_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
 
 __ALIGN_BEGIN uint8_t USBD_FS_OsCompIdDesc[] __ALIGN_END =
     {
-        0x28, 0x00, 0x00, 0x00,                         // length 
-        0x00, 0x01,                                     // version 1.0 
-        0x04, 0x00,                                     // Compatibility ID Descriptor index, fixed 
-        0x01,                                           // Number of sections  
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,       // reserved 7 bytes 
-        0x00,                                           // interface num 
-        0x01,                                           // reserved 
-        'W', 'I', 'N', 'U', 'S', 'B', 0x00, 0x00, // compatible id, ascii capital only 
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // sub comptible id 
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00              // reserved 6 bytes 
+        0x28, 0x00, 0x00, 0x00,                         // length
+        0x00, 0x01,                                     // version 1.0
+        0x04, 0x00,                                     // Compatibility ID Descriptor index, fixed
+        0x01,                                           // Number of sections
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,       // reserved 7 bytes
+        0x00,                                           // interface num
+        0x01,                                           // reserved
+        'W', 'I', 'N', 'U', 'S', 'B', 0x00, 0x00,       // compatible id, ascii capital only
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // sub comptible id
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00              // reserved 6 bytes
 };
 
 __ALIGN_BEGIN uint8_t USBD_FS_OsExtPropDesc[] __ALIGN_END =
@@ -155,8 +155,6 @@ __ALIGN_BEGIN uint8_t USBD_FS_OsExtPropDesc[] __ALIGN_END =
         '1', 0x00, 'A', 0x00, 'A', 0x00, 'E', 0x00, '4', 0x00, '6', 0x00, '4', 0x00, '6', 0x00, '3', 0x00, '7', 0x00, '7', 0x00, '6', 0x00,
         '}', 0x00, 0x00, 0x00 // preperty data: GUID
 };
-
-__ALIGN_BEGIN static uint8_t ep1RecvBuff[DAP_PACKET_SIZE] __ALIGN_END;
 
 /**
  * @}
@@ -194,7 +192,7 @@ static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
         return USBD_FAIL;
     }
 
-    USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, ep1RecvBuff, sizeof(ep1RecvBuff));
+    USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, DapAgent_GetCmdBuff(), DAP_PACKET_SIZE);
 
     return USBD_OK;
 }
@@ -370,6 +368,7 @@ static uint8_t *USBD_DAP_GetFSCfgDesc(uint16_t *length)
     return USBD_DAP_CfgFSDesc;
 }
 
+static bool cmdRspSending = false;
 /**
  * @brief  USBD_DAP_DataIn
  *         handle data IN Stage
@@ -383,6 +382,16 @@ static uint8_t USBD_DAP_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
     be caused by  a new transfer before the end of the previous transfer */
     if (epnum == DAP_EP2_ADDR)
     {
+        cmdRspSending = false;
+        DapAgent_RspSendDone();
+        
+        uint8_t* pBuff;
+        uint32_t length;
+        if(DapAgent_GetRspBuff(&pBuff, &length))
+        {
+            USBD_LL_Transmit(pdev, DAP_EP2_ADDR, pBuff, length);
+            cmdRspSending = true;
+        }
     }
     return USBD_OK;
 }
@@ -392,16 +401,26 @@ static uint8_t USBD_DAP_DataOut(struct _USBD_HandleTypeDef *pdev, uint8_t epnum)
     if (epnum == DAP_EP1_ADDR)
     {
         uint32_t len = USBD_LL_GetRxDataSize(pdev, DAP_EP1_ADDR);
-        DapAgent_AddPacket(ep1RecvBuff, len);
-        USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, ep1RecvBuff, sizeof(ep1RecvBuff));
+        DapAgent_CmdRecvDone(len);
+        USBD_LL_PrepareReceive(pdev, DAP_EP1_ADDR, DapAgent_GetCmdBuff(), DAP_PACKET_SIZE);
     }
     return USBD_OK;
 }
 
-// static uint8_t USBD_DAP_SOF(struct _USBD_HandleTypeDef *pdev)
-// {
-//     return USBD_OK;
-// }
+static uint8_t USBD_DAP_SOF(struct _USBD_HandleTypeDef *pdev)
+{
+    if(!cmdRspSending)
+    {
+        uint8_t* pBuff;
+        uint32_t length;
+        if(DapAgent_GetRspBuff(&pBuff, &length))
+        {
+            USBD_LL_Transmit(pdev, DAP_EP2_ADDR, pBuff, length);
+            cmdRspSending = true;
+        }
+    }
+    return USBD_OK;
+}
 
 /**
  * @brief  DeviceQualifierDescriptor
