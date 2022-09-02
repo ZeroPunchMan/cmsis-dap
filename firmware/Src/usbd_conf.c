@@ -27,7 +27,7 @@
 #include "usbd_dap.h"
 
 /* USER CODE BEGIN Includes */
-#include "cl_log.h"
+#include "my_log.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -121,7 +121,6 @@ void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_SetupStage((USBD_HandleTypeDef*)hpcd->pData, (uint8_t *)hpcd->Setup);
-  // CL_LOG_LINE("stup");
 }
 
 /**
@@ -137,7 +136,6 @@ void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DataOutStage((USBD_HandleTypeDef*)hpcd->pData, epnum, hpcd->OUT_ep[epnum].xfer_buff);
-  // CL_LOG_LINE("datout st");
 }
 
 /**
@@ -153,7 +151,6 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DataInStage((USBD_HandleTypeDef*)hpcd->pData, epnum, hpcd->IN_ep[epnum].xfer_buff);
-  // CL_LOG_LINE("datin st");
 }
 
 /**
@@ -173,7 +170,7 @@ void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd)
   if(count >= 500)
   {
     count = 0;
-    CL_LOG_LINE("sof");
+    USB_LOG("sof");
   }
 }
 
@@ -199,7 +196,7 @@ void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
 
   /* Reset Device. */
   USBD_LL_Reset((USBD_HandleTypeDef*)hpcd->pData);
-  CL_LOG_LINE("reset");
+  USB_LOG("reset");
 }
 
 /**
@@ -224,7 +221,7 @@ void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
     SCB->SCR |= (uint32_t)((uint32_t)(SCB_SCR_SLEEPDEEP_Msk | SCB_SCR_SLEEPONEXIT_Msk));
   }
   /* USER CODE END 2 */
-  CL_LOG_LINE("suspend");
+  USB_LOG("suspend");
 }
 
 /**
@@ -243,7 +240,7 @@ void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
 
   /* USER CODE END 3 */
   USBD_LL_Resume((USBD_HandleTypeDef*)hpcd->pData);
-  CL_LOG_LINE("resume");
+  USB_LOG("resume");
 }
 
 /**
@@ -288,7 +285,7 @@ void HAL_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DevConnected((USBD_HandleTypeDef*)hpcd->pData);
-  CL_LOG_LINE("connect");
+  USB_LOG("connect");
 }
 
 /**
@@ -303,7 +300,7 @@ void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DevDisconnected((USBD_HandleTypeDef*)hpcd->pData);
-  CL_LOG_LINE("disconnect");
+  USB_LOG("disconnect");
 }
 
 /*******************************************************************************

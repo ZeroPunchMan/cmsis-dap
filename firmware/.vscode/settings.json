@@ -45,7 +45,8 @@
         "usbd_core.h": "c",
         "limits": "c",
         "multi_buffer.h": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "my_log.h": "c"
     },
     "workbench.editor.enablePreview": false
 }

@@ -23,7 +23,7 @@
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_conf.h"
-#include "cl_log.h"
+#include "my_log.h"
 /* USER CODE BEGIN INCLUDE */
 
 /* USER CODE END INCLUDE */
@@ -233,7 +233,7 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {
   */
 uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  CL_LOG_LINE("devdesc");
+  USB_LOG("devdesc");
   UNUSED(speed);
   *length = sizeof(USBD_FS_DeviceDesc);
   return USBD_FS_DeviceDesc;
@@ -247,7 +247,7 @@ uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t * USBD_FS_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  CL_LOG_LINE("laniddesc");
+  USB_LOG("laniddesc");
   UNUSED(speed);
   *length = sizeof(USBD_LangIDDesc);
   return USBD_LangIDDesc;
@@ -261,7 +261,7 @@ uint8_t * USBD_FS_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  CL_LOG_LINE("prdstrdesc");
+  USB_LOG("prdstrdesc");
   if(speed == 0)
   {
     USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
@@ -281,7 +281,7 @@ uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length
   */
 uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  CL_LOG_LINE("manustrdesc");
+  USB_LOG("manustrdesc");
   UNUSED(speed);
   USBD_GetString((uint8_t *)USBD_MANUFACTURER_STRING, USBD_StrDesc, length);
   return USBD_StrDesc;
@@ -295,7 +295,7 @@ uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *l
   */
 uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  CL_LOG_LINE("serstrdesc");
+  USB_LOG("serstrdesc");
   UNUSED(speed);
   *length = USB_SIZ_STRING_SERIAL;
 
@@ -316,7 +316,7 @@ uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  CL_LOG_LINE("cfgstrdesc");
+  USB_LOG("cfgstrdesc");
   if(speed == USBD_SPEED_HIGH)
   {
     USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING_FS, USBD_StrDesc, length);
@@ -336,7 +336,7 @@ uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  CL_LOG_LINE("itfstrdesc");
+  USB_LOG("itfstrdesc");
   if(speed == 0)
   {
     USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
@@ -351,7 +351,7 @@ uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
 // window os descriptor
 uint8_t * USBD_FS_WinOsStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  CL_LOG_LINE("osstrdesc");
+  USB_LOG("osstrdesc");
   *length = sizeof(USBD_FS_WinOsStrDesc);
   return USBD_FS_WinOsStrDesc;
 }

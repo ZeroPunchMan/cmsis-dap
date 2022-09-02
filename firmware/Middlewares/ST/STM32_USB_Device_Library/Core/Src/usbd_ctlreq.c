@@ -174,7 +174,7 @@ USBD_StatusTypeDef  USBD_StdDevReq(USBD_HandleTypeDef *pdev,
 * @param  req: usb request
 * @retval status
 */
-#include "cl_log.h"
+#include "my_log.h"
 USBD_StatusTypeDef  USBD_StdItfReq(USBD_HandleTypeDef *pdev,
                                    USBD_SetupReqTypedef  *req)
 {
@@ -393,7 +393,7 @@ USBD_StatusTypeDef  USBD_StdEPReq(USBD_HandleTypeDef *pdev,
   return ret;
 }
 
-#include "cl_log.h"
+#include "my_log.h"
 /**
 * @brief  USBD_GetDescriptor
 *         Handle Get Descriptor requests
@@ -552,7 +552,7 @@ static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev,
       }
       else
       {
-        CL_LOG_LINE("qualerr");
+        USB_LOG("qualerr");
         USBD_CtlError(pdev, req);
         err++;
       }

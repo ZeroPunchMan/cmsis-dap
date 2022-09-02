@@ -4,7 +4,7 @@
 #include "usbd_ctlreq.h"
 #include "usbd_desc.h"
 #include "DAP_config.h"
-#include "cl_log.h"
+#include "my_log.h"
 #include "dap_agent.h"
 
 static uint8_t USBD_DAP_Init(USBD_HandleTypeDef *pdev,
@@ -308,11 +308,11 @@ static uint8_t USBD_DAP_Setup(USBD_HandleTypeDef *pdev,
             {
             case 0x04: // WCID
                 USBD_CtlSendData(pdev, USBD_FS_OsCompIdDesc, MIN(req->wLength, sizeof(USBD_FS_OsCompIdDesc)));
-                CL_LOG_LINE("wcid");
+                USB_LOG("wcid");
                 break;
             case 0x05: // ext property
                 USBD_CtlSendData(pdev, USBD_FS_OsExtPropDesc, MIN(req->wLength, sizeof(USBD_FS_OsExtPropDesc)));
-                CL_LOG_LINE("extprop:%x", req->wLength);
+                USB_LOG("extprop:%x", req->wLength);
                 break;
             default:
                 USBD_CtlError(pdev, req);
@@ -365,7 +365,7 @@ uint8_t USBD_DAP_SendData(USBD_HandleTypeDef *pdev,
  */
 static uint8_t *USBD_DAP_GetFSCfgDesc(uint16_t *length)
 {
-    CL_LOG_LINE("cfgdesc");
+    USB_LOG("cfgdesc");
     *length = sizeof(USBD_DAP_CfgFSDesc);
     return USBD_DAP_CfgFSDesc;
 }
@@ -382,7 +382,7 @@ static uint8_t USBD_DAP_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
     /* Ensure that the FIFO is empty before a new transfer, this condition could
     be caused by  a new transfer before the end of the previous transfer */
-    if (epnum == DAP_EP2_ADDR)
+    if (epnum == (DAP_EP2_ADDR & 0xf))
     {
         cmdRspSending = false;
         DapAgent_RspSendDone();
@@ -437,7 +437,7 @@ static uint8_t USBD_DAP_SOF(struct _USBD_HandleTypeDef *pdev)
  */
 static uint8_t *USBD_DAP_GetDeviceQualifierDesc(uint16_t *length)
 {
-    CL_LOG_LINE("qualidesc");
+    USB_LOG("qualidesc");
     *length = sizeof(USBD_DAP_DeviceQualifierDesc);
     return USBD_DAP_DeviceQualifierDesc;
 }

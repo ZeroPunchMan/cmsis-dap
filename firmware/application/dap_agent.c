@@ -1,6 +1,6 @@
 #include "dap_agent.h"
 #include "DAP_config.h"
-#include "cl_log.h"
+#include "my_log.h"
 #include "cl_queue.h"
 #include "DAP_config.h"
 #include "DAP.h"
@@ -23,7 +23,7 @@ bool DapAgent_CmdRecvDone(uint32_t len)
 {
     uint8_t *pBuff = NULL;
     MultiBufferGetNextBack(&cmdMulitBuff, &pBuff);
-    CL_LOG_LINE("cmd:%d,len:%ld", pBuff[0], len);
+    USB_LOG("cmd:%d,len:%ld", pBuff[0], len);
     return MultiBufferPush(&cmdMulitBuff, len) == 0;
 }
 
@@ -77,6 +77,9 @@ static void DapAgent_RecvProc(void)
         MultiBufferGetNextBack(&rspMultiBuff, &pRspBuff);
         rspLen = DAP_ExecuteCommand(pRecvBuff, pRspBuff);
         MultiBufferPush(&rspMultiBuff, rspLen);
+
+        MAIN_LOG("cmd:%x,%x", pRecvBuff[0], pRecvBuff[1]);
+        MAIN_LOG(" rsp:%x,%x,%x,%x,%x\r\n", pRspBuff[0], pRspBuff[1], pRspBuff[2], pRspBuff[3], pRspBuff[4]);
 
         MultiBufferPop(&cmdMulitBuff);
     }
