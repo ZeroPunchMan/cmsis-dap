@@ -6,8 +6,8 @@
 #include "DAP.h"
 #include "multi_buffer.h"
 
-MULTIBUFFER_STATIC_DEF(cmdMulitBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 2, static);
-MULTIBUFFER_STATIC_DEF(rspMultiBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 2, static);
+MULTIBUFFER_STATIC_DEF(cmdMulitBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 3, static);
+MULTIBUFFER_STATIC_DEF(rspMultiBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 3, static);
 
 uint8_t *DapAgent_GetCmdBuff(void)
 {
@@ -79,7 +79,8 @@ static void DapAgent_RecvProc(void)
         MultiBufferPush(&rspMultiBuff, rspLen);
 
         MAIN_LOG("cmd:%x,%x", pRecvBuff[0], pRecvBuff[1]);
-        MAIN_LOG(" rsp:%x,%x,%x,%x,%x\r\n", pRspBuff[0], pRspBuff[1], pRspBuff[2], pRspBuff[3], pRspBuff[4]);
+        MAIN_LOG(" rsp:%d--%x,%x,%x,%x,%x\r\n", rspLen, pRspBuff[0], pRspBuff[1], pRspBuff[2], pRspBuff[3], pRspBuff[4]);
+        // MAIN_LOG(" rsp:%d-%x\r\n", rspLen, pRspBuff[0]);
 
         MultiBufferPop(&cmdMulitBuff);
     }

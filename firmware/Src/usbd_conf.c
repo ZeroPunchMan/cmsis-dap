@@ -350,7 +350,9 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x80 , PCD_SNG_BUF, 0x58);
   /* USER CODE END EndPoint_Configuration */
   /* USER CODE BEGIN EndPoint_Configuration_DAP */
-  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x81 , PCD_SNG_BUF, 0x100);
+  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , DAP_EP1_ADDR , PCD_SNG_BUF, 0x100);
+  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , DAP_EP2_ADDR , PCD_SNG_BUF, 0x140);
+  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , DAP_EP3_ADDR , PCD_SNG_BUF, 0x180);
   /* USER CODE END EndPoint_Configuration_DAP */
   return USBD_OK;
 }

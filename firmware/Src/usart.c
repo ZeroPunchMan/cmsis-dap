@@ -21,7 +21,7 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-CL_QUEUE_DEF_INIT(usart1Send_q, 256, uint8_t, );
+CL_QUEUE_DEF_INIT(usart1Send_q, 1024, uint8_t, );
 CL_QUEUE_DEF_INIT(usart1Recv_q, 256, uint8_t, );
 /* USER CODE END 0 */
 
