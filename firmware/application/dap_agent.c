@@ -12,7 +12,7 @@ MULTIBUFFER_STATIC_DEF(rspMultiBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 3, stat
 uint8_t *DapAgent_GetCmdBuff(void)
 {
     uint8_t *pBuff = NULL;
-    int res = MultiBufferGetNextBack(&cmdMulitBuff, &pBuff);
+    int res = MultiBufferGetBack(&cmdMulitBuff, &pBuff);
     if (res != 0)
     { // error, shouldn't be
     }
@@ -22,7 +22,7 @@ uint8_t *DapAgent_GetCmdBuff(void)
 bool DapAgent_CmdRecvDone(uint32_t len)
 {
     uint8_t *pBuff = NULL;
-    MultiBufferGetNextBack(&cmdMulitBuff, &pBuff);
+    MultiBufferGetBack(&cmdMulitBuff, &pBuff);
     USB_LOG("cmd:%d,len:%ld", pBuff[0], len);
     return MultiBufferPush(&cmdMulitBuff, len) == 0;
 }
@@ -64,7 +64,7 @@ static void DapAgent_RecvProc(void)
                 MultiBufferPeek(&cmdMulitBuff, 0, &pRecvBuff, &bufLen);
 
                 pRecvBuff[0] = ID_DAP_ExecuteCommands;
-                MultiBufferGetNextBack(&rspMultiBuff, &pRspBuff);
+                MultiBufferGetBack(&rspMultiBuff, &pRspBuff);
                 rspLen = DAP_ExecuteCommand(pRecvBuff, pRspBuff);
                 MultiBufferPush(&rspMultiBuff, rspLen);
 
@@ -74,7 +74,7 @@ static void DapAgent_RecvProc(void)
     }
     else if (pRecvBuff[0] == ID_DAP_ExecuteCommands || pRecvBuff[0] < ID_DAP_QueueCommands)
     {
-        MultiBufferGetNextBack(&rspMultiBuff, &pRspBuff);
+        MultiBufferGetBack(&rspMultiBuff, &pRspBuff);
         rspLen = DAP_ExecuteCommand(pRecvBuff, pRspBuff);
         MultiBufferPush(&rspMultiBuff, rspLen);
 

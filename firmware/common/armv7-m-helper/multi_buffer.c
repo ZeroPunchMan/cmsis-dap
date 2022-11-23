@@ -11,18 +11,6 @@ static void CountDec(volatile uint8_t *val)
     val[0]--;
 }
 
-void MultiBufferInit(MultiBuffer_t *mulitBuffer, uint8_t *memAddr, uint32_t buffSize, uint16_t buffNum)
-{
-    mulitBuffer->front = 0;
-    mulitBuffer->back = 0;
-    mulitBuffer->count = 0;
-
-    mulitBuffer->memAddr = memAddr;
-    mulitBuffer->buffSize = buffSize;
-    mulitBuffer->buffNum = buffNum;
-
-}
-
 int MultiBufferPush(MultiBuffer_t *mulitBuffer, uint32_t length)
 {
     if(mulitBuffer->count + 1 >= mulitBuffer->buffNum) //只有一个back可用,不push
@@ -60,10 +48,10 @@ int MultiBufferPeek(MultiBuffer_t *mulitBuffer, uint16_t index, uint8_t **ppbuff
     return 0;
 }
 
-int MultiBufferGetNextBack(MultiBuffer_t* mulitBuffer, uint8_t** ppbuff)
+int MultiBufferGetBack(MultiBuffer_t* mulitBuffer, uint8_t** ppbuff)
 {
-    if(mulitBuffer->count >= mulitBuffer->buffNum)
-        return -1;
+    // if(mulitBuffer->count >= mulitBuffer->buffNum)
+    //     return -1;
 
     uint16_t index = mulitBuffer->back;
     ppbuff[0] = mulitBuffer->memAddr + index * mulitBuffer->buffSize;
