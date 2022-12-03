@@ -58,6 +58,8 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void MultiBufferTestPush(void);
+void MultiBufferTestPop(void);
 
 /* USER CODE END 0 */
 
@@ -89,7 +91,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
-  MX_USB_DEVICE_Init();
+  // MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   LL_SYSTICK_EnableIT();
   LL_USART_EnableIT_RXNE(USART1);
@@ -97,7 +99,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  DapAgent_Init();
+  // DapAgent_Init();
   // CL_LOG_LINE("init done");
   while (1)
   {
@@ -110,7 +112,6 @@ int main(void)
     {
       lastTime = GetSysTime();
       // CL_LOG_LINE("%lds", lastTime / 1000);
-      // DapAgent_Test();
 
       ledOn = !ledOn;
       if (ledOn)
@@ -118,7 +119,9 @@ int main(void)
       else
         LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_8);
     }
-    DapAgent_Process();
+    // DapAgent_Process();
+
+    MultiBufferTestPop();
   }
   /* USER CODE END 3 */
 }

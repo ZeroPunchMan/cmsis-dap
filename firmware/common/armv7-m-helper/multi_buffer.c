@@ -38,7 +38,7 @@ int MultiBufferPop(MultiBuffer_t *mulitBuffer)
 
 int MultiBufferPeek(MultiBuffer_t *mulitBuffer, uint16_t index, uint8_t **ppbuff, uint32_t* pLength)
 {
-    if(index >= mulitBuffer->count)
+    if(mulitBuffer->count == 0 || index >= mulitBuffer->count )
         return -1;
 
     index = (mulitBuffer->front + index) % mulitBuffer->buffNum;

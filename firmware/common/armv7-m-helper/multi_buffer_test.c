@@ -1,17 +1,14 @@
-#include "cl_queue.h"
 #include "multi_buffer.h"
-#include "stdlib.h"
+#include "assert.h"
+#include "cmsis_compiler.h"
+#include "cl_log.h"
 
 #define TEST_BUFF_SIZE (256)
 #define TEST_BUFF_NUM (12)
 
-typedef struct
-{
-    uint8_t start;
-    uint32_t length;
-} TestBuffInfo_t;
-
-CL_QUEUE_DEF_INIT(testQueue, TEST_BUFF_NUM, TestBuffInfo_t, static);
+#define START_VAL (0)
+#define PUSH_THRESH  (5)
+#define POP_THRESH  (6)
 
 MULTIBUFFER_STATIC_DEF(testBuffer, TEST_BUFF_SIZE, TEST_BUFF_NUM, static);
 
@@ -19,62 +16,88 @@ void MultiBufferTestInit(void)
 {
 }
 
-static bool AddPage(void)
+static int PushBuff(void)
 {
-    TestBuffInfo_t buffInfo;
-    buffInfo.start = rand() % 256;
-    buffInfo.length = (uint32_t)rand() % TEST_BUFF_SIZE;
-    if (CL_QueueAdd(&testQueue, &buffInfo) != CL_ResSuccess)
-        return false;
+    static uint8_t start = START_VAL;
 
     uint8_t *pBuff;
+    uint32_t buffLen = (start + 100) % (TEST_BUFF_SIZE / 2) + (TEST_BUFF_SIZE / 2);
     int res = MultiBufferGetBack(&testBuffer, &pBuff);
-    if (!res == 0)
-        return false;
+    // if (res != 0)
+    //     return -1;
 
-    for (uint32_t i = 0; i < buffInfo.length; i++)
+    for (uint32_t i = 0; i < buffLen; i++)
     {
-        pBuff[i] = buffInfo.start + i;
+        pBuff[i] = (uint8_t)(start + i);
     }
 
-    res = MultiBufferPush(&testBuffer, buffInfo.length);
-    if (!res == 0)
-        return false;
+    res = MultiBufferPush(&testBuffer, buffLen);
+    if (res != 0)
+        return 1;
 
-    return true;
+    start++;
+
+    // CL_LOG_LINE("add:%d,%d", start, buffLen);
+    return 0;
 }
 
-static bool PollAndCheckPage(void)
+static int PopAndCheckBuff(void)
 {
-    TestBuffInfo_t buffInfo;
-    if (CL_QueuePoll(&testQueue, &buffInfo) != CL_ResSuccess)
-        return false;
+    static uint8_t start = START_VAL;
+
+    int res = MultiBufferGetCount(&testBuffer);
+    if (res == 0)
+        return 1;
 
     uint8_t *pBuff;
     uint32_t buffLen;
-    int res = MultiBufferPeek(&testBuffer, 0, &pBuff, &buffLen);
-    if (!res == 0)
-        return false;
+    res = MultiBufferPeek(&testBuffer, 0, &pBuff, &buffLen);
+    if (res != 0)
+        return -1;
 
-    if (buffLen != buffInfo.length)
-        return false;
+    if (pBuff[0] != start)
+        return -1;
+
+    if (buffLen != ((pBuff[0] + 100) % (TEST_BUFF_SIZE / 2) + (TEST_BUFF_SIZE / 2)))
+        return -1;
+
     for (uint32_t i = 0; i < buffLen; i++)
     {
-        if (pBuff[i] != buffInfo.start + i)
-            return false;
+        if (pBuff[i] != (uint8_t)(pBuff[0] + i))
+            return -1;
     }
 
     res = MultiBufferPop(&testBuffer);
-    if (!res == 0)
-        return false;
+    if (res != 0)
+        return -1;
 
-    return true;
+    // CL_LOG_LINE("add:%d,%d", start, buffLen);
+    start++;
+
+    return 0;
 }
 
-void MultiBufferTestMain(void)
+void MultiBufferTestPush(void)
 {
+    if (MultiBufferGetCount(&testBuffer) <= PUSH_THRESH)
+    {
+        int res = PushBuff();
+        if (res < 0)
+            __BKPT(1);
+    }
 }
 
-void MultiBufferTestIsr(void)
+void MultiBufferTestPop(void)
 {
+    // static uint8_t count = 0;
+    // if (++count < 20)
+    //     return;
+
+    // count = 0;
+    if (MultiBufferGetCount(&testBuffer) >= POP_THRESH)
+    {
+        int res = PopAndCheckBuff();
+        if (res < 0)
+            __BKPT(1);
+    }
 }
