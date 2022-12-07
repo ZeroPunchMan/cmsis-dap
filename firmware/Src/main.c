@@ -58,9 +58,23 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void MultiBufferTestPush(void);
-void MultiBufferTestPop(void);
+static void UsbFakePlug(void)
+{
+  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
+  LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_12);
 
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_12;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_12);
+  HAL_Delay(100);
+  LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_12);
+}
 /* USER CODE END 0 */
 
 /**
@@ -86,20 +100,21 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  LL_SYSTICK_EnableIT();
+  UsbFakePlug();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
-  // MX_USB_DEVICE_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  LL_SYSTICK_EnableIT();
   LL_USART_EnableIT_RXNE(USART1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  // DapAgent_Init();
+  DapAgent_Init();
   // CL_LOG_LINE("init done");
   while (1)
   {
@@ -112,6 +127,7 @@ int main(void)
     {
       lastTime = GetSysTime();
       // CL_LOG_LINE("%lds", lastTime / 1000);
+      // DapAgent_Test();
 
       ledOn = !ledOn;
       if (ledOn)
@@ -119,9 +135,7 @@ int main(void)
       else
         LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_8);
     }
-    // DapAgent_Process();
-
-    MultiBufferTestPop();
+    DapAgent_Process();
   }
   /* USER CODE END 3 */
 }

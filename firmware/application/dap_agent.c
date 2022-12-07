@@ -6,8 +6,8 @@
 #include "DAP.h"
 #include "multi_buffer.h"
 
-MULTIBUFFER_STATIC_DEF(cmdMulitBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 3, static);
-MULTIBUFFER_STATIC_DEF(rspMultiBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 3, static);
+MULTIBUFFER_STATIC_DEF(cmdMulitBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 2, static);
+MULTIBUFFER_STATIC_DEF(rspMultiBuff, DAP_PACKET_SIZE, DAP_PACKET_COUNT * 2, static);
 
 uint8_t *DapAgent_GetCmdBuff(void)
 {
@@ -23,7 +23,7 @@ bool DapAgent_CmdRecvDone(uint32_t len)
 {
     uint8_t *pBuff = NULL;
     MultiBufferGetBack(&cmdMulitBuff, &pBuff);
-    USB_LOG("cmd:%d,len:%ld", pBuff[0], len);
+    // USB_LOG("cmd:%d,len:%ld", pBuff[0], len);
     return MultiBufferPush(&cmdMulitBuff, len) == 0;
 }
 
@@ -78,8 +78,8 @@ static void DapAgent_RecvProc(void)
         rspLen = DAP_ExecuteCommand(pRecvBuff, pRspBuff);
         MultiBufferPush(&rspMultiBuff, rspLen);
 
-        MAIN_LOG("cmd:%x,%x", pRecvBuff[0], pRecvBuff[1]);
-        MAIN_LOG(" rsp:%d--%x,%x,%x,%x,%x\r\n", rspLen, pRspBuff[0], pRspBuff[1], pRspBuff[2], pRspBuff[3], pRspBuff[4]);
+        MAIN_LOG("cmd:%x,%x,%x\r\n", pRecvBuff[0], pRecvBuff[1], pRecvBuff[2]);
+        // MAIN_LOG(" rsp:%d--%x,%x,%x,%x,%x\r\n", rspLen, pRspBuff[0], pRspBuff[1], pRspBuff[2], pRspBuff[3], pRspBuff[4]);
         // MAIN_LOG(" rsp:%d-%x\r\n", rspLen, pRspBuff[0]);
 
         MultiBufferPop(&cmdMulitBuff);

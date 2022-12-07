@@ -94,7 +94,7 @@ This information includes:
 /// This configuration settings is used to optimize the communication performance with the
 /// debugger and depends on the USB peripheral. For devices with limited RAM or USB buffer the
 /// setting can be reduced (valid range is 1 .. 255).
-#define DAP_PACKET_COUNT        8U              ///< Specifies number of packets buffered.
+#define DAP_PACKET_COUNT        16U              ///< Specifies number of packets buffered.
 
 /// Indicate that UART Serial Wire Output (SWO) trace is available.
 /// This information is returned by the command \ref DAP_Info as part of <b>Capabilities</b>.
@@ -400,7 +400,7 @@ __STATIC_FORCEINLINE uint32_t PIN_SWDIO_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_SWDIO_OUT(uint32_t bit)
 {
-  if (bit)
+  if (bit & 0x01)
     SwdioTmsHigh();
   else
     SwdioTmsLow();
@@ -439,7 +439,7 @@ __STATIC_FORCEINLINE uint32_t PIN_TDI_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_TDI_OUT(uint32_t bit)
 {
-  if (bit)
+  if (bit & 0x01)
     TdiHigh();
   else
     TdiLow();
@@ -472,7 +472,7 @@ __STATIC_FORCEINLINE uint32_t PIN_nTRST_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_nTRST_OUT(uint32_t bit)
 {
-  if (bit)
+  if (bit & 0x01)
     NtrstHigh();
   else
     NtrstLow();
@@ -495,7 +495,7 @@ __STATIC_FORCEINLINE uint32_t PIN_nRESET_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_nRESET_OUT(uint32_t bit)
 {
-  if (bit)
+  if (bit & 0x01)
     NresetHigh();
   else
     NresetLow();
