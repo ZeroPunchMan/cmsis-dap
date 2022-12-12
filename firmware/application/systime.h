@@ -4,7 +4,7 @@
 
 #define SYSTIME_SECOND(s) (s * 1000UL)
 
-extern uint32_t g_sysTime;
+extern volatile uint32_t g_sysTime;
 
 static inline void SysTimeInc(uint32_t inc)
 {
@@ -22,4 +22,11 @@ static inline uint32_t SysTimeSpan(uint32_t base)
 static inline uint32_t GetSysTime(void)
 {
     return g_sysTime;
+}
+
+static inline void DelayOnSysTime(uint32_t time)
+{
+    uint32_t curTime = GetSysTime();
+    while (SysTimeSpan(curTime) < time)
+        ;
 }

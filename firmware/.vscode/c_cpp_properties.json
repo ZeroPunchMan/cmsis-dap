@@ -5,7 +5,6 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/common/clib/inc",
-                "${workspaceFolder}/common/mcu-misc/inc",
                 "${workspaceFolder}/common/",
                 "${workspaceFolder}/Drivers/STM32F1xx_HAL_Driver/Inc",
                 "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F1xx/Include",
@@ -13,22 +12,25 @@
                 "${workspaceFolder}/application/daplink",
                 "${workspaceFolder}/Drivers/CMSIS/Include",
                 "${workspaceFolder}/Inc",
-                "${env:GANEINC}"
+                "${env:ARMGCC}/arm-none-eabi/include",
+                "${workspaceFolder}/common/armv7-m-helper"
             ],
             "defines": [
+                "__GNUC__",
                 "USE_FULL_LL_DRIVER",
                 "HSE_VALUE=8000000",
                 "STM32F103xB",
                 "PREFETCH_ENABLE=1",
-
-                "___int64_t_defined",
-                "___int8_t_defined",
-                "___int16_t_defined",
-                "___int32_t_defined"
+                "__STATIC_INLINE=static inline",
+                "__STATIC_FORCEINLINE=static inline",
+                "uint32_t=unsigned int",
+                "uint8_t=unsigned char",
+                "__ARM_ARCH_7M__=1"
             ],
             "cStandard": "c99",
             "cppStandard": "c++98",
-            "intelliSenseMode": "gcc-x86"
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "${env:ARMGCC}/bin/arm-none-eabi-cpp.exe"
         }
     ],
     "version": 4
