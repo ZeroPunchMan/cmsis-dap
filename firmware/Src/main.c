@@ -121,7 +121,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    static bool ledOn = false;
+    // static bool ledOn = false;
     static uint32_t lastTime = 0;
     if (SysTimeSpan(lastTime) >= SYSTIME_SECOND(1))
     {
@@ -129,11 +129,11 @@ int main(void)
       // CL_LOG_LINE("%lds", lastTime / 1000);
       // DapAgent_Test();
 
-      ledOn = !ledOn;
-      if (ledOn)
-        LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_8);
-      else
-        LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_8);
+      // ledOn = !ledOn;
+      // if (ledOn)
+      //   LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_8);
+      // else
+      //   LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_8);
     }
     DapAgent_Process();
   }

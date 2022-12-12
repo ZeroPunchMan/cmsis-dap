@@ -46,7 +46,8 @@
         "limits": "c",
         "multi_buffer.h": "c",
         "typeinfo": "c",
-        "my_log.h": "c"
+        "my_log.h": "c",
+        "cl_queue.h": "c"
     },
     "workbench.editor.enablePreview": false
 }
