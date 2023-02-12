@@ -1,12 +1,12 @@
 #include "multi_buffer.h"
 #include "atomic_arm7m.h"
 
-static void CountInc(volatile uint8_t *val)
+static void CountInc(volatile uint16_t *val)
 {
     val[0]++;
 }
 
-static void CountDec(volatile uint8_t *val)
+static void CountDec(volatile uint16_t *val)
 {
     val[0]--;
 }
