@@ -13,10 +13,11 @@ static inline void SysTimeInc(uint32_t inc)
 
 static inline uint32_t SysTimeSpan(uint32_t base)
 {
-    if (g_sysTime >= base)
-        return g_sysTime - base;
+    uint32_t sysTime = g_sysTime;
+    if (sysTime >= base)
+        return sysTime - base;
     else
-        return UINT32_MAX - base + g_sysTime + 1;
+        return UINT32_MAX - base + sysTime + 1;
 }
 
 static inline uint32_t GetSysTime(void)

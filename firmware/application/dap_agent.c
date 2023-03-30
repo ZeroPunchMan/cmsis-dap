@@ -32,6 +32,15 @@ void DapAgent_Init(void)
     DAP_Setup();
 }
 
+
+static volatile bool clearCmd = false;
+void DapAgent_Reset(void)
+{
+    DAP_Setup();
+
+    clearCmd = true;
+}
+
 static void DapAgent_RecvProc(void)
 {
     if (MultiBufferGetCount(&cmdMulitBuff) == 0)
