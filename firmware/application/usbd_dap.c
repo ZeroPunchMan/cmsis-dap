@@ -226,6 +226,8 @@ static uint8_t USBD_DAP_DeInit(USBD_HandleTypeDef *pdev,
         pdev->pClassData = NULL;
     }
 
+    DapAgent_ResetFromIsr();
+
     return USBD_OK;
 }
 

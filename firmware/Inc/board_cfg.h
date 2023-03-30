@@ -29,3 +29,6 @@
 
 #define DAP_LED2_PORT GPIOA
 #define DAP_LED2_PIN LL_GPIO_PIN_8
+
+
+// #define USB_RESET_MCU 

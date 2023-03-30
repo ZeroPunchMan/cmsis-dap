@@ -11,3 +11,5 @@ bool DapAgent_CmdRecvDone(uint32_t len);
 bool DapAgent_GetRspBuff(uint8_t** ppbuff, uint32_t* pLen);
 void DapAgent_RspSendDone(void);
 
+void DapAgent_ResetFromIsr(void);
+

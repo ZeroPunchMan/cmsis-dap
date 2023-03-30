@@ -32,11 +32,19 @@ void DapAgent_Init(void)
     DAP_Setup();
 }
 
-
 static volatile bool clearCmd = false;
-void DapAgent_Reset(void)
-{
+void DapAgent_ResetFromIsr(void)
+{  //USB reset
+#if defined (USB_RESET_MCU)
+    NVIC_SystemReset();
+#endif
+
     DAP_Setup();
+
+    uint8_t* pBuff;
+    uint32_t len;
+    while(DapAgent_GetRspBuff(&pBuff, &len))
+        DapAgent_RspSendDone();
 
     clearCmd = true;
 }
@@ -97,6 +105,14 @@ static void DapAgent_RecvProc(void)
 
 void DapAgent_Process(void)
 {
+    if(clearCmd)
+    {
+        while(MultiBufferGetCount(&cmdMulitBuff) > 0)
+            MultiBufferPop(&cmdMulitBuff);
+
+        clearCmd = false;
+    }
+
     DapAgent_RecvProc();
 }
 
@@ -115,3 +131,5 @@ void DapAgent_RspSendDone(void)
 {
     MultiBufferPop(&rspMultiBuff);
 }
+
+
