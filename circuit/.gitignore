@@ -1,0 +1,6 @@
+dap_link-backups
+*.lck
+gerber
+fp-info-cache
+*.pdf
+*.bak

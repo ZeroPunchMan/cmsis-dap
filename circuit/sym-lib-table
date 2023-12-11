@@ -1,3 +1,4 @@
 (sym_lib_table
-  (lib (name dap_link-rescue)(type Legacy)(uri ${KIPRJMOD}/dap_link-rescue.lib)(options "")(descr ""))
+  (version 7)
+  (lib (name "dap_link-rescue")(type "KiCad")(uri "${KIPRJMOD}/dap_link-rescue.kicad_sym")(options "")(descr ""))
 )
