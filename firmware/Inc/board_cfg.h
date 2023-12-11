@@ -10,9 +10,11 @@
 #define DAP_SWDIO_TMS_PORT (GPIOA)
 #define DAP_SWDIO_TMS_PIN (LL_GPIO_PIN_5)
 
+// tdi
 #define DAP_TDI_PORT (GPIOA)
 #define DAP_TDI_PIN (LL_GPIO_PIN_4)
 
+//tdo
 #define DAP_TDO_PORT (GPIOA)
 #define DAP_TDO_PIN (LL_GPIO_PIN_3)
 
@@ -24,10 +26,12 @@
 #define DAP_NRESET_PORT (GPIOA)
 #define DAP_NRESET_PIN (LL_GPIO_PIN_1)
 
+// led1
 #define DAP_LED1_PORT (GPIOA)
 #define DAP_LED1_PIN (LL_GPIO_PIN_7)
 
+// led2  todo define
 #define DAP_LED2_PORT (GPIOA)
 #define DAP_LED2_PIN (LL_GPIO_PIN_8)
 
-// #define USB_RESET_MCU
+#define USB_RESET_MCU //todo remote wakeup? self powered?
