@@ -19,8 +19,8 @@
 #define DAP_TDO_PIN (LL_GPIO_PIN_3)
 
 // test reset
-#define DAP_NTRST_PORT (GPIOB)
-#define DAP_NTRST_PIN (LL_GPIO_PIN_0)
+#define DAP_TRST_PORT (GPIOB)
+#define DAP_TRST_PIN (LL_GPIO_PIN_0)
 
 // device reset
 #define DAP_NRESET_PORT (GPIOA)
@@ -33,5 +33,9 @@
 // led2  running
 #define DAP_LED2_PORT (GPIOB)
 #define DAP_LED2_PIN (LL_GPIO_PIN_2)
+
+//txs0108e OE
+#define TXS_OE_PORT (GPIOA)
+#define TXS_OE_PIN (LL_GPIO_PIN_0)
 
 #define USB_RESET_MCU //no remote wakeup, no self power

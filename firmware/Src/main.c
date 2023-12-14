@@ -115,7 +115,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   DapAgent_Init();
-  // CL_LOG_LINE("init done");
+  // CL_LOG_INFO("init done");
   while (1)
   {
     /* USER CODE END WHILE */
@@ -126,7 +126,7 @@ int main(void)
     if (SysTimeSpan(lastTime) >= SYSTIME_SECOND(1))
     {
       lastTime = GetSysTime();
-      // CL_LOG_LINE("%lds", lastTime / 1000);
+      // CL_LOG_INFO("%lds", lastTime / 1000);
       // DapAgent_Test();
 
       // ledOn = !ledOn;

@@ -37,7 +37,7 @@ static int PushBuff(void)
 
     start++;
 
-    // CL_LOG_LINE("add:%d,%d", start, buffLen);
+    // CL_LOG_INFO("add:%d,%d", start, buffLen);
     return 0;
 }
 
@@ -71,7 +71,7 @@ static int PopAndCheckBuff(void)
     if (res != 0)
         return -1;
 
-    // CL_LOG_LINE("add:%d,%d", start, buffLen);
+    // CL_LOG_INFO("add:%d,%d", start, buffLen);
     start++;
 
     return 0;
