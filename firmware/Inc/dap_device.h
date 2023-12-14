@@ -156,6 +156,7 @@ static inline void JtagPortInit(void)
     LL_GPIO_Init(DAP_TRST_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = DAP_NRESET_PIN;
+    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
     LL_GPIO_Init(DAP_NRESET_PORT, &GPIO_InitStruct);
 
     LL_GPIO_SetOutputPin(GPIOA, DAP_SWK_TCK_PIN);
@@ -194,6 +195,7 @@ static inline void SwdPortInit(void)
     GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
 
     GPIO_InitStruct.Pin = DAP_NRESET_PIN;
+    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
     LL_GPIO_Init(DAP_NRESET_PORT, &GPIO_InitStruct);
 
     LL_GPIO_SetOutputPin(GPIOA, DAP_SWK_TCK_PIN);
