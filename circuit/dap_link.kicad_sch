@@ -3914,7 +3914,7 @@
     (property "Reference" "SW_Push1" (at 166.37 67.8647 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "SW_RST" (at 166.37 70.2889 0)
+    (property "Value" "SW_Push" (at 166.37 70.2889 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" (at 166.37 69.85 0)
@@ -3933,7 +3933,7 @@
       )
       (project "dap_link"
         (path "/9df731a6-2e06-41f7-94bb-21385ffe9471"
-          (reference "SW_Push1") (unit 1)
+          (reference "SW1") (unit 1)
         )
       )
       (project "nrf52833dk"
